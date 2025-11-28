@@ -1,7 +1,8 @@
 // Components
 export { default as HeaderControls } from "./components/HeaderControls";
-export { default as HelpFooter } from "./components/HelpFooter"; // Named export
+export { default as HelpFooter } from "./components/HelpFooter";
 export { default as PlaybookCanvas } from "./components/PlaybookCanvas";
+export { MobileCanvas } from "./components/MobileCanvas"; // Named export
 export { default as TimelineControls } from "./components/TimelineControls";
 
 // Hooks

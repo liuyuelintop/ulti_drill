@@ -92,4 +92,23 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Animations */
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+
+  @keyframes slide-in-bottom {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .animate-slide-in-bottom {
+    animation: slide-in-bottom 0.3s ease-out;
+  }
 }

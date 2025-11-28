@@ -1,17 +1,19 @@
 import { useRef, useEffect } from "react";
 import Konva from "konva";
 import {
-  HeaderControls,
-  HelpFooter,
-  PlaybookCanvas,
-  TimelineControls,
   useAnimation,
   useVideoExport,
   useFileHandler,
   usePlaybookState,
 } from "../features/playbook";
+import { useIsMobile } from "../shared/hooks/useIsMobile";
+import { DesktopLayout } from "./layouts/DesktopLayout";
+import { MobileLayout } from "./layouts/MobileLayout";
 
 const App = () => {
+  // --- RESPONSIVE CHECK ---
+  const isMobile = useIsMobile();
+
   // --- REFS ---
   const stageRef = useRef<Konva.Stage>(null);
 
@@ -68,12 +70,8 @@ const App = () => {
   });
 
   // --- INTERACTION STATE ---
-  // Centralized logic for what is allowed in the current state
   const interactionState = {
     isEditable: !isPlaying && !isRecording && !isExporting,
-    canExport: !isPlaying && !isRecording && !isExporting && !isDirty,
-    canLoadSave: !isRecording && !isExporting,
-    canModifyTimeline: !isRecording && !isExporting, // Add/Delete/Clear frames
   };
 
   // --- HANDLERS ---
@@ -146,92 +144,59 @@ const App = () => {
   };
 
   // --- KEYBOARD SHORTCUTS ---
-  // Deselect item on 'Delete' key press
-  // Reset item on 'r' key press (if selected)
-  // etc.
-
-  // Effect for keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Deselect item on 'Delete' key
       if (event.key === "Escape" && selectedItemId) {
         selectItem(null);
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedItemId, selectItem]);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedItemId, selectItem]); // Dependencies for the effect
+  // --- PROPS BUNDLING ---
+  const layoutProps = {
+    // State
+    frames,
+    currentFrameIndex,
+    isDirty,
+    isPlaying,
+    isRecording,
+    isExporting,
+    selectedItemId,
+    itemsToRender,
+    prevFrameItems,
+    animatingItems,
 
-  return (
-    <div className="flex flex-col h-screen font-sans text-slate-900 bg-slate-50">
-      {/* Hidden file input for load functionality */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={loadPlay}
-        accept=".json"
-        className="hidden"
-        aria-label="File input for loading playbook"
-      />
+    // Refs
+    stageRef,
+    fileInputRef,
 
-      {/* STICKY HEADER - Three Rows */}
-      <HeaderControls
-        currentFrameIndex={currentFrameIndex}
-        totalFrames={frames.length}
-        isDirty={isDirty}
-        isPlaying={isPlaying}
-        onLoadPlay={triggerLoadPlay}
-        onSavePlay={savePlay}
-        onExportVideo={handleExportVideo}
-        isRecording={isRecording}
-        isExporting={isExporting}
-        onSaveChanges={saveChanges}
-        onDiscardChanges={discardChanges}
-      />
+    // Handlers
+    onLoadPlay: loadPlay,
+    onTriggerLoadPlay: triggerLoadPlay,
+    onSavePlay: savePlay,
+    onExportVideo: handleExportVideo,
+    onSaveChanges: saveChanges,
+    onDiscardChanges: discardChanges,
+    onDragEnd: handleDragEnd,
+    onSelect: selectItem,
+    onResetItem: resetToPrevious,
+    onAddFrame: handleAddFrame,
+    onDuplicateFrame: duplicateFrame,
+    onDeleteFrame: handleDeleteFrame,
+    onClearAllFrames: handleClearAllFrames,
+    onSelectFrame: handleSelectFrame,
+    onNextFrame: handleNextFrame,
+    onPrevFrame: handlePrevFrame,
+    onTogglePlay: togglePlay,
+  };
 
-      {/* CANVAS - Takes remaining space */}
-      <main className="flex-1 flex items-center justify-center p-6 overflow-auto">
-        <div className="w-full max-w-6xl">
-          <PlaybookCanvas
-            ref={stageRef}
-            currentItems={itemsToRender}
-            prevFrameItems={prevFrameItems}
-            animatingItems={animatingItems}
-            selectedItemId={selectedItemId}
-            isPlaying={isPlaying}
-            isRecording={isRecording}
-            onDragEnd={handleDragEnd}
-            onSelect={selectItem}
-          />
-        </div>
-      </main>
-
-      {/* TIMELINE FOOTER */}
-      <TimelineControls
-        frames={frames}
-        currentFrameIndex={currentFrameIndex}
-        isRecording={isRecording || isExporting}
-        isPlaying={isPlaying}
-        hasSelectedItem={!!selectedItemId}
-        isDirty={isDirty}
-        onClearAll={handleClearAllFrames}
-        onDeleteFrame={handleDeleteFrame}
-        onDuplicateFrame={duplicateFrame}
-        onAddFrame={handleAddFrame}
-        onSelectFrame={handleSelectFrame}
-        onResetItem={resetToPrevious}
-        onTogglePlay={togglePlay}
-        onNextFrame={handleNextFrame}
-        onPrevFrame={handlePrevFrame}
-      />
-
-      {/* HELP FOOTER */}
-      <HelpFooter />
-    </div>
+  // --- RENDER ---
+  return isMobile ? (
+    <MobileLayout {...layoutProps} />
+  ) : (
+    <DesktopLayout {...layoutProps} />
   );
 };
 
