@@ -83,17 +83,18 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 ## Architecture & Key Files
 
 ### Core Logic (Custom Hooks)
-*   **`src/features/playbook/hooks/useTacticalState.ts`**: Manages core data (frames, editing state), item selection, and manipulation logic
-    *   `updateEditingFrame`: Auto-enters edit mode on item drag
-    *   `saveChanges`: Commits editing frame to frames array
-    *   `discardChanges`: Reverts to saved state
-    *   `addFrame`: Creates new frame from last frame
-    *   `duplicateFrame`: Duplicates current frame (including edits) and inserts after
-    *   `deleteFrame`: Removes current frame
-    *   `clearAllFrames`: Resets to initial formation
-    *   `resetToPrevious`: Resets selected item to **current frame's saved position** (fixed bug)
-*   **`src/features/playbook/hooks/usePlaybackAndExport.ts`**: Handles animation loop (`requestAnimationFrame`), video recording, and export logic
-*   **`src/features/playbook/hooks/usePlaybookIO.ts`**: Manages JSON file import/export operations
+*   **`src/features/playbook/hooks/usePlaybookState.ts`**: Manages the core data model for the playbook (frames, editing state, item selection, and manipulation logic).
+    *   `updateEditingFrame`: Auto-enters edit mode on item drag.
+    *   `saveChanges`: Commits editing frame to frames array.
+    *   `discardChanges`: Reverts to saved state.
+    *   `addFrame`: Creates new frame (copy of last) and jumps to it.
+    *   `duplicateFrame`: Duplicates current frame (including edits) and inserts after.
+    *   `deleteFrame`: Removes current frame, intelligently adjusting current frame index.
+    *   `clearAllFrames`: Resets to initial formation.
+    *   `resetToPrevious`: Resets selected item to **current frame's saved position**.
+*   **`src/features/playbook/hooks/useAnimation.ts`**: Manages the animation playback loop, `isPlaying` state, and updates `animatingItems` for canvas rendering.
+*   **`src/features/playbook/hooks/useVideoExport.ts`**: Handles video recording of the canvas, manages `isRecording` and `isExporting` states, and generates video files (MP4/WebM). Now explicitly uses `avc3` codec for improved stability during export.
+*   **`src/features/playbook/hooks/useFileHandler.ts`**: Manages saving and loading playbook data to/from JSON files.
 
 ### Components
 *   **`src/app/App.tsx`**: Main orchestration layer with full-screen flex layout

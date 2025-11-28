@@ -2,7 +2,7 @@ import { useRef, useCallback } from "react";
 import type { DraggableItem, PlaybookData } from "../types";
 import { isValidPlaybook } from "../utils/frames";
 
-interface UsePlaybookIOProps {
+interface UseFileHandlerProps {
   frames: DraggableItem[][];
   setFrames: (frames: DraggableItem[][]) => void;
   setCurrentFrameIndex: (index: number) => void;
@@ -10,13 +10,20 @@ interface UsePlaybookIOProps {
   isDirty: boolean;
 }
 
-export const usePlaybookIO = ({
+/**
+ * useFileHandler
+ * 
+ * Handles file-based operations for the playbook:
+ * - Saving (Downloading JSON)
+ * - Loading (Parsing and Validating JSON)
+ */
+export const useFileHandler = ({
   frames,
   setFrames,
   setCurrentFrameIndex,
   setEditingFrame,
   isDirty,
-}: UsePlaybookIOProps) => {
+}: UseFileHandlerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Serialize current frames to a JSON download.

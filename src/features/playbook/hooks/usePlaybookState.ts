@@ -3,23 +3,37 @@ import type { DraggableItem } from "../types";
 import { getInitialFormation } from "../utils/formation";
 import { cloneFrame } from "../utils/frames";
 
-// Owns tactical frames, editing buffer, selection, and frame CRUD.
-export const useTacticalState = () => {
+/**
+ * usePlaybookState
+ * 
+ * Manages the core data model of the playbook:
+ * - Frames list (the sequence of tactical setups)
+ * - Current frame index (timeline position)
+ * - Selection state (which player/disc is selected)
+ * - Editing state (unsaved changes buffer)
+ */
+export const usePlaybookState = () => {
   const [frames, setFrames] = useState<DraggableItem[][]>([
     getInitialFormation(),
   ]);
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  
+  // Temporary state for unsaved changes in the current frame
   const [editingFrame, setEditingFrame] = useState<DraggableItem[] | null>(
     null
-  ); // Temporary state for unsaved changes
+  ); 
+  
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
+  // --- Derived State ---
   const currentItems = frames[currentFrameIndex];
   const itemsToRender = editingFrame || currentItems;
   const prevFrameItems =
     currentFrameIndex > 0 ? frames[currentFrameIndex - 1] : undefined;
   const isDirty = editingFrame !== null;
 
+  // --- Editing Logic ---
+  
   const updateEditingFrame = useCallback(
     (id: string, x: number, y: number) => {
       setEditingFrame((prev) => {
@@ -46,13 +60,15 @@ export const useTacticalState = () => {
     setEditingFrame(null);
   }, []);
 
+  // --- Frame Management (CRUD) ---
+
   const addFrame = useCallback(() => {
     setFrames((prev) => {
       const newFrame = cloneFrame(prev[prev.length - 1]);
       return [...prev, newFrame];
     });
-    setCurrentFrameIndex((prev) => prev + 1);
-  }, []);
+    setCurrentFrameIndex(frames.length);
+  }, [frames.length]);
 
   const duplicateFrame = useCallback(() => {
     // Duplicate the current frame and insert it right after
@@ -69,7 +85,12 @@ export const useTacticalState = () => {
   const deleteFrame = useCallback(() => {
     if (frames.length <= 1) return;
     setFrames((prev) => prev.filter((_, i) => i !== currentFrameIndex));
-    setCurrentFrameIndex((prev) => Math.max(0, prev - 1));
+    
+    // If deleting the last frame, step back.
+    // Otherwise, stay at current index (next frame slides into place).
+    if (currentFrameIndex === frames.length - 1) {
+      setCurrentFrameIndex((prev) => Math.max(0, prev - 1));
+    }
     setEditingFrame(null);
   }, [frames.length, currentFrameIndex]);
 
@@ -80,6 +101,8 @@ export const useTacticalState = () => {
     setSelectedItemId(null);
   }, []);
 
+  // --- Selection & Reset ---
+
   const selectItem = useCallback((id: string | null) => {
     setSelectedItemId(id);
   }, []);
@@ -87,7 +110,7 @@ export const useTacticalState = () => {
   const resetToPrevious = useCallback(() => {
     if (!selectedItemId || !editingFrame) return;
 
-    // Reset to the SAVED position in the CURRENT frame, not the previous frame
+    // Reset to the SAVED position in the CURRENT frame
     const savedItem = currentItems.find((item) => item.id === selectedItemId);
 
     if (savedItem) {

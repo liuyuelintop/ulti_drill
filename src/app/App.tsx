@@ -5,9 +5,10 @@ import {
   HelpFooter,
   PlaybookCanvas,
   TimelineControls,
-  usePlaybackAndExport,
-  usePlaybookIO,
-  useTacticalState,
+  useAnimation,
+  useVideoExport,
+  useFileHandler,
+  usePlaybookState,
 } from "../features/playbook";
 
 const App = () => {
@@ -34,24 +35,31 @@ const App = () => {
     clearAllFrames,
     selectItem,
     resetToPrevious,
-  } = useTacticalState();
+  } = usePlaybookState();
 
   const {
     animatingItems,
     isPlaying,
     setIsPlaying,
-    isRecording,
-    isExporting,
     togglePlay,
-    handleExportVideo,
-  } = usePlaybackAndExport({
+  } = useAnimation({
     frames,
     setCurrentFrameIndex,
-    stageRef,
-    isDirty,
   });
 
-  const { fileInputRef, savePlay, loadPlay, triggerLoadPlay } = usePlaybookIO({
+  const {
+    isRecording,
+    isExporting,
+    handleExportVideo,
+  } = useVideoExport({
+    isDirty,
+    isPlaying,
+    setIsPlaying,
+    setCurrentFrameIndex,
+    stageRef,
+  });
+
+  const { fileInputRef, savePlay, loadPlay, triggerLoadPlay } = useFileHandler({
     frames,
     setFrames,
     setCurrentFrameIndex,
