@@ -1,0 +1,16 @@
+- Feature-based architecture & clean separation of concerns
+- Server state vs UI state handled with proper tools
+- Colocation of logic, components, and styles
+- Code splitting & lazy loading
+- Avoid unnecessary re-renders; memoise strategically
+- Standardised data fetching & consistent loading/error states
+- Use error boundaries
+- Secure auth (prefer httpOnly cookies)
+- No secrets in frontend
+- TypeScript everywhere
+- Strict linting + formatting rules
+- Automated testing (unit + E2E)
+- Consistent design system & styling approach
+- Monitoring, logging, performance metrics
+- Feature flags for rollout
+- Accessibility & semantic HTML
