@@ -7,8 +7,8 @@ This document outlines the roadmap for enhancing the Tactical Animator. It track
 ### Phase 0: Structural Refactoring (Completed)
 *   **Goal:** Clean up the codebase to improve maintainability, readability, and ease of adding new features. This phase focuses on separating concerns within `App.tsx`.
 *   **Tasks:**
-    1.  **Extract Types:** Moved common TypeScript interfaces and types (e.g., `ItemType`, `DraggableItem`) into a dedicated file (`src/types.ts`). (Completed)
-    2.  **Extract Constants:** Moved all application-wide constants (e.g., `SCALE`, `FIELD_LENGTH`, `COLORS`) into a separate file (`src/constants.ts`). (Completed)
+    1.  **Extract Types:** Moved common TypeScript interfaces and types (e.g., `ItemType`, `DraggableItem`) into a dedicated file (`src/features/playbook/types.ts`). (Completed)
+    2.  **Extract Constants:** Moved all application-wide constants (e.g., `SCALE`, `FIELD_LENGTH`, `COLORS`) into a separate file (`src/features/playbook/constants/canvas.ts`). (Completed)
     3.  **Componentization:** Extracted the `<Stage>` rendering logic into a dedicated component (`PlaybookCanvas.tsx`). (Completed)
     4.  **Refactor App.tsx:** Updated `App.tsx` to import the extracted types, constants, and the new `PlaybookCanvas` component. (Completed)
     5.  **Verify Build:** Confirmed the application builds correctly after refactoring. (Completed)
@@ -50,7 +50,7 @@ This document outlines the roadmap for enhancing the Tactical Animator. It track
 ### Phase 3: Import / Export System for Animations (Completed)
 *   **Goal:** Enable users to save, load, and share their animations.
 *   **Tasks:**
-    1.  **Define Playbook Data Schema:** Created the `PlaybookData` interface in `src/types.ts`. (Completed)
+    1.  **Define Playbook Data Schema:** Created the `PlaybookData` interface in `src/features/playbook/types.ts`. (Completed)
     2.  **Export Functionality:**
         *   **"Export Full Play":** Implemented "SAVE PLAY" button that serializes the `frames` and metadata into a JSON file download. (Completed)
     3.  **Import Functionality:**
@@ -61,7 +61,7 @@ This document outlines the roadmap for enhancing the Tactical Animator. It track
 ### Phase 4: Premium UI/UX Overhaul (Completed)
 *   **Goal:** Transform the application interface from a basic functional prototype to a premium, professional-grade design matching the "Tactical Animator" mockup.
 *   **Implemented Design:**
-    *   **Design System:** Established a centralized design system (`design-tokens.ts`) with a dark, modern color palette, typography scale, and reusable component tokens.
+    *   **Design System:** Established a centralized design system (`src/shared/design/tokens.ts`) with a dark, modern color palette, typography scale, and reusable component tokens.
     *   **Visual Polish:** Implemented a rich, stadium-style field with gradients, hash marks, and alternating grass strips.
     *   **Professional Canvas:** Replaced flat colors with gradient-filled players, shadows, and proper text labels using the "Outfit" font.
     *   **Modern Timeline:** Redesigned the timeline with a dedicated playback control bar and "mini-field" frame thumbnails.

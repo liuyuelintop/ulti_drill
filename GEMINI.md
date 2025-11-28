@@ -83,7 +83,7 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 ## Architecture & Key Files
 
 ### Core Logic (Custom Hooks)
-*   **`src/hooks/useTacticalState.ts`**: Manages core data (frames, editing state), item selection, and manipulation logic
+*   **`src/features/playbook/hooks/useTacticalState.ts`**: Manages core data (frames, editing state), item selection, and manipulation logic
     *   `updateEditingFrame`: Auto-enters edit mode on item drag
     *   `saveChanges`: Commits editing frame to frames array
     *   `discardChanges`: Reverts to saved state
@@ -92,41 +92,42 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
     *   `deleteFrame`: Removes current frame
     *   `clearAllFrames`: Resets to initial formation
     *   `resetToPrevious`: Resets selected item to **current frame's saved position** (fixed bug)
-*   **`src/hooks/usePlaybackAndExport.ts`**: Handles animation loop (`requestAnimationFrame`), video recording, and export logic
-*   **`src/hooks/usePlaybookIO.ts`**: Manages JSON file import/export operations
+*   **`src/features/playbook/hooks/usePlaybackAndExport.ts`**: Handles animation loop (`requestAnimationFrame`), video recording, and export logic
+*   **`src/features/playbook/hooks/usePlaybookIO.ts`**: Manages JSON file import/export operations
 
 ### Components
-*   **`src/App.tsx`**: Main orchestration layer with full-screen flex layout
+*   **`src/app/App.tsx`**: Main orchestration layer with full-screen flex layout
     *   Sticky header (HeaderControls)
     *   Flex-1 canvas area (centered)
     *   Timeline footer (TimelineControls)
     *   Help footer (HelpFooter)
     *   Global keyboard shortcuts (Esc to deselect)
-*   **`src/components/HeaderControls.tsx`**: Unified three-row header component
+*   **`src/features/playbook/components/HeaderControls.tsx`**: Unified three-row header component
     *   Manages all header functionality (branding, status, file ops, edit bar)
     *   Replaced old EditModeControls (merged into Row 3)
     *   Contextual status badges (frame counter, unsaved, recording/preview)
-*   **`src/components/TimelineControls.tsx`**: Compact timeline editor with four sections
+*   **`src/features/playbook/components/TimelineControls.tsx`**: Compact timeline editor orchestrating four subsections
     *   Header with title
-    *   Frame sequence strip
-    *   Three control groups (playback, actions, danger zone)
+    *   Frame sequence strip (`timeline/FrameStrip`)
+    *   Playback controls (`timeline/PlaybackControls`)
+    *   Frame actions (`timeline/FrameActions`)
+    *   Danger zone (`timeline/DangerZone`)
     *   Decoupled from help text (moved to HelpFooter)
-*   **`src/components/HelpFooter.tsx`**: Standalone tips component
+*   **`src/features/playbook/components/HelpFooter.tsx`**: Standalone tips component
     *   Keyboard shortcuts and usage instructions
     *   Fully reusable and self-contained
-*   **`src/components/PlaybookCanvas.tsx`**: Responsive Konva canvas
+*   **`src/features/playbook/components/PlaybookCanvas.tsx`**: Responsive Konva canvas composed of layers
+    *   `canvas/FieldLayer` renders stadium field with gradients/markings
+    *   `canvas/GhostLayer` renders previous-frame ghosts (hidden while playing)
+    *   `canvas/ItemsLayer` renders interactive draggable items with selection highlights
     *   Dynamic scaling with ResizeObserver
-    *   Renders realistic stadium field with gradients and markings
-    *   Interactive draggable items with selection highlights
-    *   Ghost positions from previous frames
-    *   Clean, unobstructed field (no status overlays)
-*   **`src/components/ui/Button.tsx`**: Reusable button component with variants
+*   **`src/shared/ui/Button.tsx`**: Reusable button component with variants
     *   Primary, Secondary, Success, Danger, Ghost
     *   Styled for light theme with hover/active states
 
 ### Design & Configuration
-*   **`src/design-tokens.ts`**: Centralized design system definitions (Colors, Typography, Spacing, Shadows)
-*   **`src/constants.ts`**: Application constants
+*   **`src/shared/design/tokens.ts`**: Centralized design system definitions (Colors, Typography, Spacing, Shadows)
+*   **`src/features/playbook/constants/canvas.ts`**: Application constants
     *   Field dimensions: FIELD_LENGTH (880px), FIELD_WIDTH (320px)
     *   Player/disc sizes, colors from design tokens
 *   **`src/index.css`**: Global styles, Tailwind imports, and custom CSS variables

@@ -1,4 +1,4 @@
-import { designTokens } from './src/design-tokens';
+import { designTokens } from './src/shared/design/tokens';
 
 /** @type {import('tailwindcss').Config} */
 export default {
