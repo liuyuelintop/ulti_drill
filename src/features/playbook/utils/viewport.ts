@@ -60,7 +60,7 @@ export const calculateFieldTransform = (
  */
 export const constrainTransform = (
   current: ViewportTransform,
-  container: ContainerSize
+  _container: ContainerSize
 ): ViewportTransform => {
     // TODO: Implement boundary constraints if needed (e.g., bounce back)
     // For now, just limiting scale range is handled in the interaction hook

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { AppLayoutProps } from "./DesktopLayout";
+import type { AppLayoutProps } from "./DesktopLayout";
 import { MobileCanvas } from "../../features/playbook";
-import { useIsMobile } from "../../shared/hooks/useIsMobile";
 
 export const MobileLayout: React.FC<AppLayoutProps> = ({
   // State
@@ -43,7 +42,6 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleHelp = () => setShowHelp(!showHelp);

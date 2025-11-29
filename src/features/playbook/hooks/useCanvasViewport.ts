@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { calculateFieldTransform, ContainerSize, FitMode, ViewportTransform } from "../utils/viewport";
+import { calculateFieldTransform } from "../utils/viewport";
+import type { ContainerSize, FitMode, ViewportTransform } from "../utils/viewport";
 
 interface UseCanvasViewportOptions {
   mode?: FitMode;
@@ -8,7 +9,7 @@ interface UseCanvasViewportOptions {
 }
 
 export const useCanvasViewport = (
-  containerRef: React.RefObject<HTMLElement>, 
+  containerRef: React.RefObject<HTMLElement | null>,
   options: UseCanvasViewportOptions = {}
 ) => {
   const { 

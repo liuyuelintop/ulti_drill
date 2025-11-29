@@ -6,7 +6,7 @@ import FieldLayer from "./canvas/FieldLayer";
 import GhostLayer from "./canvas/GhostLayer";
 import ItemsLayer from "./canvas/ItemsLayer";
 import { useCanvasViewport } from "../hooks/useCanvasViewport";
-import { ViewportTransform } from "../utils/viewport";
+import type { ViewportTransform } from "../utils/viewport";
 
 interface MobileCanvasProps {
   currentItems: DraggableItem[];
