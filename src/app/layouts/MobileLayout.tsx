@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { AppLayoutProps } from "./DesktopLayout";
 import { MobileCanvas } from "../../features/playbook";
+import { useOrientation } from "../../shared/hooks/useOrientation";
 
 export const MobileLayout: React.FC<AppLayoutProps> = ({
   // State
@@ -42,6 +43,7 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const isLandscape = useOrientation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleHelp = () => setShowHelp(!showHelp);
@@ -71,6 +73,35 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
       }
     }
   }, [currentFrameIndex]);
+
+  // Portrait mode warning
+  if (!isLandscape) {
+    return (
+      <div className="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-8">
+        <div className="text-white text-center">
+          {/* Rotate phone icon */}
+          <svg
+            className="w-24 h-24 mx-auto mb-6 animate-bounce"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <rect x="4" y="2" width="16" height="20" rx="2" />
+            <path d="M12 18h.01" />
+            <path d="M8 2l8 10" strokeDasharray="2 2" />
+          </svg>
+
+          <h2 className="text-2xl font-bold mb-4">请旋转手机</h2>
+          <p className="text-slate-300 text-lg">
+            为获得最佳编辑体验
+            <br />
+            请将手机横屏使用
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-slate-100 overflow-hidden select-none">
@@ -220,103 +251,32 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
         )}
 
         {/* ==================== BOTTOM PANEL (Fixed) ==================== */}
-        <div className="pointer-events-auto backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe flex flex-col">
+        <div className="pointer-events-auto bg-white/90 backdrop-blur-md border-t border-slate-200/50 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] pb-safe flex flex-col">
           {/* Save/Discard Bar (appears when dirty) */}
           {isDirty && (
-            <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 flex items-center gap-2">
+            <div className="px-4 py-1.5 bg-amber-50 border-b border-amber-200 flex items-center gap-2">
               <button
                 onClick={onDiscardChanges}
-                className="flex-1 px-3 py-2.5 rounded-lg font-bold text-sm text-slate-500 border border-slate-200 bg-white shadow-sm active:scale-95 transition-transform"
+                className="flex-1 px-2 py-1.5 rounded-lg font-bold text-xs text-slate-500 border border-slate-200 bg-white shadow-sm active:scale-95 transition-transform"
               >
                 ✕ Discard All changes
               </button>
 
               <button
                 onClick={onSaveChanges}
-                className="flex-1 px-3 py-2.5 rounded-lg font-bold text-sm bg-emerald-500 text-white shadow-md active:scale-95 transition-transform"
+                className="flex-1 px-2 py-1.5 rounded-lg font-bold text-xs bg-emerald-500 text-white shadow-md active:scale-95 transition-transform"
               >
                 ✓ Save Changes
               </button>
             </div>
           )}
 
-          {/* -------------------- 行 1: 操作区 (灰色背景) -------------------- */}
-          <div className="px-4 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-around gap-2">
-            {/* 重置物体 */}
-            <button
-              onClick={onResetItem}
-              disabled={!selectedItemId}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-lg transition-all active:scale-95
-                    ${
-                      selectedItemId
-                        ? "text-slate-700 hover:bg-slate-200"
-                        : "text-slate-300 cursor-not-allowed"
-                    }`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <path d="M3 3v5h5" />
-              </svg>
-              <span className="text-xs font-medium">Reset Selected Item</span>
-            </button>
-
-            {/* 复制当前帧 */}
-            <button
-              onClick={onDuplicateFrame}
-              className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-lg text-slate-700 hover:bg-slate-200 transition-all active:scale-95"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </svg>
-              <span className="text-xs font-medium">
-                Duplicate Current Frame
-              </span>
-            </button>
-
-            {/* Delete Current Frame */}
-            <button
-              onClick={onDeleteFrame}
-              className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-all active:scale-95"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-              <span className="text-xs font-medium">Delete Current Frame</span>
-            </button>
-          </div>
-
-          {/* -------------------- 行 2: 导航区 (白色背景) -------------------- */}
-          <div className="px-4 py-3 bg-white flex items-center gap-3">
-            {/* 播放按钮 */}
+          {/* -------------------- 紧凑单行控制栏 -------------------- */}
+          <div className="px-2 py-1.5 bg-white/90 backdrop-blur-md flex items-center gap-2">
+            {/* Play button - 36×36 */}
             <button
               onClick={onTogglePlay}
-              className={`flex-none flex items-center justify-center w-12 h-12 rounded-full shadow-sm transition-all active:scale-95
+              className={`flex-none flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all active:scale-95
                     ${
                       isPlaying
                         ? "bg-amber-100 text-amber-700 border border-amber-200"
@@ -328,8 +288,8 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
               {isPlaying ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -339,8 +299,8 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -349,21 +309,87 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
               )}
             </button>
 
-            {/* 帧列表 (横向滚动) */}
+            {/* Reset - 32×32, icon-only */}
+            <button
+              onClick={onResetItem}
+              disabled={!selectedItemId}
+              className={`flex-none w-8 h-8 flex items-center justify-center rounded transition-all active:scale-95
+                    ${
+                      selectedItemId
+                        ? "text-slate-700 hover:bg-slate-100"
+                        : "text-slate-300 cursor-not-allowed"
+                    }`}
+              title="Reset Selected"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+
+            {/* Duplicate - 32×32, icon-only */}
+            <button
+              onClick={onDuplicateFrame}
+              className="flex-none w-8 h-8 flex items-center justify-center rounded text-slate-700 hover:bg-slate-100 transition-all active:scale-95"
+              title="Duplicate Frame"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+
+            {/* Delete - 32×32, icon-only */}
+            <button
+              onClick={onDeleteFrame}
+              className="flex-none w-8 h-8 flex items-center justify-center rounded text-red-600 hover:bg-red-50 transition-all active:scale-95"
+              title="Delete Frame"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </button>
+
+            {/* Timeline - compact */}
             <div
               ref={timelineRef}
-              className="flex-1 flex overflow-x-auto gap-2 scrollbar-hide snap-x snap-mandatory"
+              className="flex-1 flex overflow-x-auto gap-1.5 scrollbar-hide snap-x snap-mandatory"
             >
               {frames.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => !isPlaying && onSelectFrame(idx)}
                   className={`
-                                flex-none w-16 h-12 rounded-lg flex items-center justify-center text-sm font-bold snap-center border-2 transition-all
+                                flex-none w-12 h-9 rounded flex items-center justify-center text-xs font-bold snap-center border-2 transition-all
                                 ${
                                   currentFrameIndex === idx
-                                    ? "border-primary-500 bg-primary-50 text-primary-600 shadow-md scale-105"
-                                    : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300"
+                                    ? "border-primary-500 bg-primary-50 text-primary-600 shadow-sm scale-105"
+                                    : "border-slate-200 bg-slate-50 text-slate-400"
                                 }
                             `}
                 >
@@ -372,16 +398,16 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
               ))}
             </div>
 
-            {/* 添加按钮 */}
+            {/* Add button - 36×36 */}
             <button
               onClick={onAddFrame}
-              className="flex-none flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-gray-300 hover:bg-gray-400 text-white shadow-md active:scale-95 transition-transform"
+              className="flex-none w-9 h-9 flex items-center justify-center rounded-lg bg-gray-300 hover:bg-gray-400 text-white shadow-sm active:scale-95 transition-transform"
               title="Add Frame"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
