@@ -26,9 +26,6 @@ importers:
       react-konva:
         specifier: ^19.2.0
         version: 19.2.0(@types/react@19.2.6)(konva@10.0.12)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      tailwindcss:
-        specifier: ^4.1.17
-        version: 4.1.17
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
