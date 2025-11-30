@@ -142,9 +142,21 @@ export const usePlaybookState = () => {
         }
       }
 
-      setEditingFrame(newFrame);
+      if (editingFrame) {
+        // If already editing, just update the draft
+        setEditingFrame(newFrame);
+      } else {
+        // If clean state, auto-save the structural change immediately
+        setFrames((prev) => {
+          const next = [...prev];
+          next[currentFrameIndex] = cloneFrame(newFrame);
+          return next;
+        });
+        // Ensure editingFrame remains null so isDirty is false
+        setEditingFrame(null);
+      }
     },
-    [editingFrame, currentItems]
+    [editingFrame, currentItems, currentFrameIndex]
   );
 
   const saveChanges = useCallback(() => {

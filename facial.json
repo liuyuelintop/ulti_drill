@@ -1,0 +1,296 @@
+{
+  "version": "1.0",
+  "name": "Facial",
+  "frames": [
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 319,
+        "y": 165,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 304,
+        "y": 160,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 244,
+        "y": 240,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 444,
+        "y": 160,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 494,
+        "y": 160,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 544,
+        "y": 160,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 594,
+        "y": 160,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 644,
+        "y": 160,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 401,
+        "y": 111,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 304,
+        "y": 160,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 244,
+        "y": 240,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 443,
+        "y": 160,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 494,
+        "y": 160,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 544,
+        "y": 160,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 594,
+        "y": 160,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 644,
+        "y": 160,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 401,
+        "y": 111,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 304,
+        "y": 160,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 244,
+        "y": 240,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 424,
+        "y": 127,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 527,
+        "y": 159,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 570,
+        "y": 160,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 610,
+        "y": 159,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 614,
+        "y": 118,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 553,
+        "y": 88,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 343,
+        "y": 157,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 308,
+        "y": 226,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 512,
+        "y": 160,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 563,
+        "y": 158,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 613,
+        "y": 159,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 702,
+        "y": 157,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 578,
+        "y": 101,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 778,
+        "y": 94,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 445,
+        "y": 124,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 445,
+        "y": 220,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 574,
+        "y": 159,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 622,
+        "y": 158,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 669,
+        "y": 159,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 767,
+        "y": 115,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 530,
+        "y": 158,
+        "label": "7"
+      }
+    ]
+  ]
+}
