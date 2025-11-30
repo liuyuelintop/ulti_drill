@@ -80,6 +80,13 @@ Record and export animations as `.mp4` video files (preferred). Gracefully falls
 ### Help System
 Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displayed at bottom of page.
 
+### Mobile Responsive Layout
+*   **Adaptive Layout:** Automatically detects mobile devices (< 768px) and switches to mobile-optimized layout
+*   **Landscape Enforcement:** Portrait mode shows fullscreen rotation prompt to encourage landscape orientation
+*   **Optimized Controls:** Compact single-row bottom panel maximizes field visibility (56-69% of screen vs desktop)
+*   **Touch-Optimized:** All buttons meet minimum 32×32px touch targets for accessibility
+*   **Field Priority:** Canvas occupies majority of screen space without scrolling required
+
 ## Architecture & Key Files
 
 ### Core Logic (Custom Hooks)
@@ -95,9 +102,14 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 *   **`src/features/playbook/hooks/useAnimation.ts`**: Manages the animation playback loop, `isPlaying` state, and updates `animatingItems` for canvas rendering.
 *   **`src/features/playbook/hooks/useVideoExport.ts`**: Handles video recording of the canvas, manages `isRecording` and `isExporting` states, and generates video files (MP4/WebM). Now explicitly uses `avc3` codec for improved stability during export.
 *   **`src/features/playbook/hooks/useFileHandler.ts`**: Manages saving and loading playbook data to/from JSON files.
+*   **`src/features/playbook/hooks/useCanvasViewport.ts`**: Calculates optimal viewport scale and position for mobile canvas (fit-width mode with padding).
+*   **`src/shared/hooks/useIsMobile.ts`**: Detects mobile devices using media query (< 768px breakpoint).
+*   **`src/shared/hooks/useOrientation.ts`**: Detects screen orientation (landscape/portrait) for mobile layout optimization.
 
 ### Components
-*   **`src/app/App.tsx`**: Main orchestration layer with full-screen flex layout
+
+#### Desktop Layout
+*   **`src/app/layouts/DesktopLayout.tsx`**: Desktop-optimized layout with full header and timeline controls
     *   Sticky header (HeaderControls)
     *   Flex-1 canvas area (centered)
     *   Timeline footer (TimelineControls)
@@ -117,11 +129,30 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 *   **`src/features/playbook/components/HelpFooter.tsx`**: Standalone tips component
     *   Keyboard shortcuts and usage instructions
     *   Fully reusable and self-contained
-*   **`src/features/playbook/components/PlaybookCanvas.tsx`**: Responsive Konva canvas composed of layers
-    *   `canvas/FieldLayer` renders stadium field with gradients/markings
-    *   `canvas/GhostLayer` renders previous-frame ghosts (hidden while playing)
-    *   `canvas/ItemsLayer` renders interactive draggable items with selection highlights
-    *   Dynamic scaling with ResizeObserver
+
+#### Mobile Layout
+*   **`src/app/layouts/MobileLayout.tsx`**: Mobile-optimized layout enforcing landscape orientation
+    *   Portrait warning screen with rotation prompt (中文: "请旋转手机")
+    *   Compact top bar with menu and help buttons
+    *   Fullscreen canvas background
+    *   Ultra-compact bottom panel (60-108px height)
+    *   Single-row control layout: [Play] [Reset] [Duplicate] [Delete] [Timeline] [Add]
+    *   Icon-only operation buttons (32×32px) with title tooltips
+    *   Semi-transparent white background (bg-white/90) with backdrop blur
+    *   Hamburger menu drawer for file operations (Save/Load/Export/Clear All)
+*   **`src/features/playbook/components/MobileCanvas.tsx`**: Mobile-optimized Konva canvas
+    *   Fixed viewport (no pan/zoom gestures to avoid conflicts with dragging)
+    *   Automatic fit-width scaling with padding
+    *   Touch-optimized event handlers (onTap)
+    *   Same layer structure as desktop (FieldLayer, GhostLayer, ItemsLayer)
+
+#### Shared Canvas Components
+*   **`src/features/playbook/components/PlaybookCanvas.tsx`**: Desktop responsive Konva canvas with ResizeObserver
+*   **`src/features/playbook/components/canvas/FieldLayer.tsx`**: Stadium field rendering (grass strips, endzones, brick marks)
+*   **`src/features/playbook/components/canvas/GhostLayer.tsx`**: Previous frame ghost positions
+*   **`src/features/playbook/components/canvas/ItemsLayer.tsx`**: Interactive draggable items with gradient fills and selection highlights
+
+#### Shared UI
 *   **`src/shared/ui/Button.tsx`**: Reusable button component with variants
     *   Primary, Secondary, Success, Danger, Ghost
     *   Styled for light theme with hover/active states
@@ -177,23 +208,37 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 *   **← →** - Navigate frames (when not editing)
 *   **Space** - Play/pause animation (when not editing)
 
-## Recent Improvements (Latest Session)
+## Recent Improvements
+
+### Mobile Optimization (Latest)
+*   **Landscape-First Design:** Force landscape orientation for optimal field viewing (2.7:1 aspect ratio)
+*   **Portrait Warning Screen:** Fullscreen prompt encouraging users to rotate device
+*   **Space Optimization:** Reduced bottom panel from 193-245px to 60-108px (69% improvement)
+*   **Canvas Visibility:** Increased from 19-34% to 56-69% of screen height
+*   **Compact Controls:** Merged two control rows into single row with icon-only buttons
+*   **Field Fully Visible:** No scrolling required in landscape mode (667×375px)
+*   **Touch Accessibility:** All buttons meet 32×32px minimum touch targets
+*   **Semi-Transparent UI:** Bottom panel uses bg-white/90 with backdrop blur
 
 ### Layout Reorganization
 *   Refactored header into unified three-row component
 *   Redesigned timeline with compact, organized layout
 *   Separated help text into dedicated HelpFooter component
 *   Full-screen flex layout with sticky header
+*   Separate desktop and mobile layouts with adaptive routing
 
 ### Bug Fixes
 *   Fixed Reset Item to reset to current frame's saved position (was incorrectly resetting to previous frame)
 *   Reset Item now only enabled when `isDirty === true`
+*   Fixed canvas gesture conflicts on mobile by disabling pan/zoom
 
 ### New Features
 *   Duplicate Frame functionality
 *   Responsive canvas with dynamic scaling
 *   Pulsing unsaved changes badge
 *   Smart file operation guards
+*   Mobile/desktop detection and adaptive layouts
+*   Orientation detection for mobile devices
 
 ### UI Polish
 *   Emerald green for primary actions (play button, save, active frames)
@@ -202,6 +247,7 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 *   Improved hover/active states throughout
 *   Recording/Preview indicator moved to header (no canvas obstruction)
 *   Contextual status badges with consistent styling
+*   Icon-only buttons with tooltips for space efficiency on mobile
 
 ## Development
 
