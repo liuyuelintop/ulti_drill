@@ -1,0 +1,238 @@
+{
+  "version": "1.0",
+  "name": "Creampie",
+  "frames": [
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 319,
+        "y": 165,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 304,
+        "y": 160,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 244,
+        "y": 240,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 438.00000041614874,
+        "y": 56,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 494,
+        "y": 56,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 550.9999995144932,
+        "y": 56,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 599.9999995838513,
+        "y": 56,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 645.9999998612838,
+        "y": 57,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 319,
+        "y": 165,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 304,
+        "y": 160,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 244,
+        "y": 240,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 473.9999979192562,
+        "y": 54,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 524.999997849898,
+        "y": 55,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 572.9999979886145,
+        "y": 55,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 622.9999979886144,
+        "y": 54,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 576.0000047163526,
+        "y": 117,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 558.9999833540496,
+        "y": 167,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 348.99999687888425,
+        "y": 134,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 287.9999969482424,
+        "y": 213,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 519.9999947287824,
+        "y": 54,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 572.9999945207079,
+        "y": 55,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 621.9999945900663,
+        "y": 55,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 677.9999941739175,
+        "y": 56,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 548.0000066583801,
+        "y": 152,
+        "label": "7"
+      }
+    ],
+    [
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 785.9999676097548,
+        "y": 115,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 429.9999912608759,
+        "y": 113,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 368.99999133023414,
+        "y": 201,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 572.9999910528016,
+        "y": 54,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 623.9999909834435,
+        "y": 53,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 675.9999908447274,
+        "y": 53,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 769.9999877929698,
+        "y": 96,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 523.0000083923333,
+        "y": 55,
+        "label": "7"
+      }
+    ]
+  ]
+}

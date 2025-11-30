@@ -128,7 +128,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
       {/* ROW 2: File Operations & Team Config */}
       <div
         className={`w-full px-6 py-3 border-t border-slate-100 transition-opacity duration-200 ${
-          isDirty ? 'opacity-60 pointer-events-none' : 'opacity-100'
+          isDirty ? "opacity-60 pointer-events-none" : "opacity-100"
         }`}
       >
         <div className="flex flex-wrap justify-between items-center gap-4">
@@ -165,7 +165,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
               </svg>
-              💾 Save Play
+              💾 Download Play
             </Button>
 
             <Button

@@ -28,9 +28,13 @@ export const useFileHandler = ({
 
   // Serialize current frames to a JSON download.
   const savePlay = useCallback(() => {
+    const playName = prompt("Enter a name for this play:", "My Play") || "My Play";
+    // Sanitize filename: replace spaces/special chars with underscores
+    const fileName = playName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
     const data: PlaybookData = {
       version: "1.0",
-      name: "My Play", // TODO: Add UI for play name
+      name: playName,
       frames: frames,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -39,7 +43,7 @@ export const useFileHandler = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "playbook.json";
+    a.download = `${fileName}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }, [frames]);
