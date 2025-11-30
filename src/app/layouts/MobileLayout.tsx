@@ -195,12 +195,11 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                 <button
                   key={idx}
                   onClick={() => onSelectFrame(idx)}
-                  className={`flex-none w-10 h-8 rounded-md text-xs font-bold snap-center transition-all ${
-                    currentFrameIndex === idx
-                      ? "bg-primary-600 text-white scale-110 shadow-md"
-                      : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                  }`}
-                >
+                                        className={`flex-none w-10 h-8 rounded-md text-xs font-bold snap-center transition-all ${
+                                          currentFrameIndex === idx
+                                            ? "bg-sky-600 text-white scale-110 shadow-md"
+                                            : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                                        }`}                >
                   {idx + 1}
                 </button>
               ))}

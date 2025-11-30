@@ -246,7 +246,17 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 
 ## Recent Improvements
 
-### Dynamic Player Configuration & Play/Preset Management (New)
+### Mobile Tactical Player (Latest)
+
+-   **Pivot to Viewer:** Completely refactored the mobile experience from a cramped editor to a dedicated **Tactical Player**.
+    -   **Read-Only Mode:** Removed all editing controls (drag, save, add/delete frames) to focus on friction-free playback.
+    -   **Simplified UI:** streamlined interface featuring only playback controls, a timeline slider, and a "Load Tactics" menu.
+    -   **Portrait Support:** Removed the "Rotate to View" restriction; the player now adapts to both portrait and landscape orientations.
+-   **Visibility Fixes:**
+    -   Fixed invisible Play/Pause button and active frame indicators by replacing custom Tailwind colors with standard utility classes (`bg-sky-600`), resolving configuration issues on mobile.
+    -   Ensured high contrast for critical controls (white icons on blue backgrounds).
+
+### Dynamic Player Configuration & Play/Preset Management (Previous)
 
 -   **Dynamic Offense/Defense Players:** Implemented the ability to configure both offense and defense players (1-7 each) via a new `TeamConfig` component.
 -   **Configurable Defense Positioning:** When adding defense players, their initial positions are now intelligently calculated relative to their corresponding offense players, using formation-aware offsets (Vertical vs. Horizontal Stack). Offsets are centralized in `src/features/playbook/constants/canvas.ts` for easy management.
