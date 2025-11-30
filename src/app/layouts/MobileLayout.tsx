@@ -74,14 +74,13 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
     }
   }, [currentFrameIndex]);
 
-  // Portrait mode warning
-  if (!isLandscape) {
-    return (
-      <div className="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-8">
-        <div className="text-white text-center">
-          {/* Rotate phone icon */}
+  return (
+    <div className="fixed inset-0 bg-slate-100 overflow-hidden select-none">
+      {/* Portrait Overlay */}
+      {!isLandscape && (
+        <div className="absolute inset-0 z-[999] bg-slate-900/95 flex flex-col items-center justify-center p-8">
           <svg
-            className="w-24 h-24 mx-auto mb-6 animate-bounce"
+            className="w-24 h-24 mx-auto mb-6 animate-bounce text-white"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -91,20 +90,14 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
             <path d="M12 18h.01" />
             <path d="M8 2l8 10" strokeDasharray="2 2" />
           </svg>
-
-          <h2 className="text-2xl font-bold mb-4">请旋转手机</h2>
-          <p className="text-slate-300 text-lg">
+          <h2 className="text-2xl font-bold text-white mb-4">请旋转手机</h2>
+          <p className="text-slate-300 text-lg text-center">
             为获得最佳编辑体验
             <br />
             请将手机横屏使用
           </p>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="fixed inset-0 bg-slate-100 overflow-hidden select-none">
+      )}
       {/* Hidden Inputs */}
       <input
         type="file"
@@ -230,11 +223,15 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
                 <div className="flex flex-col gap-1.5 text-sky-700 text-xs">
                   <div className="flex items-start gap-2">
                     <span className="text-sky-500 flex-none mt-0.5">•</span>
-                    <span>Tap a player or disc, then drag to set new position</span>
+                    <span>
+                      Tap a player or disc, then drag to set new position
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-sky-500 flex-none mt-0.5">•</span>
-                    <span>Use "Reset Selected Item" to undo changes to an item</span>
+                    <span>
+                      Use "Reset Selected Item" to undo changes to an item
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-sky-500 flex-none mt-0.5">•</span>
