@@ -43,7 +43,7 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const isLandscape = useOrientation();
+  const orientation = useOrientation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleHelp = () => setShowHelp(!showHelp);
@@ -77,27 +77,31 @@ export const MobileLayout: React.FC<AppLayoutProps> = ({
   return (
     <div className="fixed inset-0 bg-slate-100 overflow-hidden select-none">
       {/* Portrait Overlay */}
-      {!isLandscape && (
-        <div className="absolute inset-0 z-[999] bg-slate-900/95 flex flex-col items-center justify-center p-8">
-          <svg
-            className="w-24 h-24 mx-auto mb-6 animate-bounce text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <rect x="4" y="2" width="16" height="20" rx="2" />
-            <path d="M12 18h.01" />
-            <path d="M8 2l8 10" strokeDasharray="2 2" />
-          </svg>
-          <h2 className="text-2xl font-bold text-white mb-4">请旋转手机</h2>
-          <p className="text-slate-300 text-lg text-center">
-            为获得最佳编辑体验
-            <br />
-            请将手机横屏使用
-          </p>
-        </div>
-      )}
+      <div
+        className={
+          orientation === "portrait"
+            ? "absolute inset-0 z-[999] bg-slate-900/95 flex flex-col items-center justify-center p-8"
+            : "hidden"
+        }
+      >
+        <svg
+          className="w-24 h-24 mx-auto mb-6 animate-bounce text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <rect x="4" y="2" width="16" height="20" rx="2" />
+          <path d="M12 18h.01" />
+          <path d="M8 2l8 10" strokeDasharray="2 2" />
+        </svg>
+        <h2 className="text-2xl font-bold text-white mb-4">请旋转手机</h2>
+        <p className="text-slate-300 text-lg text-center">
+          为获得最佳编辑体验
+          <br />
+          请将手机横屏使用
+        </p>
+      </div>
       {/* Hidden Inputs */}
       <input
         type="file"
