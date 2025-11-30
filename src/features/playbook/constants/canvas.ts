@@ -9,9 +9,24 @@ export const BRICK_MARK = 18 * SCALE; // 144px from goal line
 
 // Player and Disc Sizes
 export const PLAYER_RADIUS = 14; // px
+export const PLAYER_DIAMETER = 2 * PLAYER_RADIUS;
 export const DISC_RADIUS = 8; // px
 export const GHOST_OPACITY = 0.4; // Increased opacity for better visibility on bright field
 export const SELECTION_STROKE_WIDTH = 2; // px
+
+// Defense positioning offsets
+export const DEFENSE_OFFSETS = {
+  VERTICAL: {
+    HANDLER: { x: PLAYER_RADIUS, y: -PLAYER_DIAMETER },
+    DUMP: { x: PLAYER_DIAMETER, y: -PLAYER_RADIUS },
+    STACK: { x: -PLAYER_RADIUS, y: PLAYER_RADIUS },
+  },
+  HORIZONTAL: {
+    HANDLER_CENTER: { x: PLAYER_RADIUS, y: -PLAYER_RADIUS },
+    HANDLER_WING: { x: PLAYER_DIAMETER, y: 0 },
+    CUTTER: { x: -PLAYER_DIAMETER, y: 0 },
+  },
+};
 
 // Canvas Colors (using design tokens for consistency)
 export const COLORS = {
