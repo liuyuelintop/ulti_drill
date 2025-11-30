@@ -14,7 +14,7 @@ interface PlaybookCanvasProps {
   selectedItemId: string | null;
   isPlaying: boolean;
   isRecording: boolean;
-  onDragEnd: (e: any, id: string) => void;
+  onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
   onSelect: (id: string | null) => void;
 }
 

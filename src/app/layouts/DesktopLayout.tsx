@@ -6,7 +6,7 @@ import {
   PlaybookCanvas,
   TimelineControls,
 } from "../../features/playbook";
-import type { DraggableItem } from "../../features/playbook/types";
+import type { DraggableItem, PlaybookData } from "../../features/playbook/types";
 
 export interface AppLayoutProps {
   // State
@@ -21,12 +21,18 @@ export interface AppLayoutProps {
   prevFrameItems: DraggableItem[] | undefined;
   animatingItems: DraggableItem[] | null;
 
+  // Configuration
+  offenseCount: number;
+  defenseCount: number;
+  onUpdateTeamConfig: (offense: number, defense: number) => void;
+
   // Refs
   stageRef: React.RefObject<Konva.Stage | null>;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 
   // Handlers - File Ops
   onLoadPlay: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLoadPreset: (data: PlaybookData) => void;
   onTriggerLoadPlay: () => void;
   onSavePlay: () => void;
   onExportVideo: () => void;
@@ -34,7 +40,7 @@ export interface AppLayoutProps {
   // Handlers - Edit Ops
   onSaveChanges: () => void;
   onDiscardChanges: () => void;
-  onDragEnd: (e: any, id: string) => void;
+  onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
   onSelect: (id: string | null) => void;
   onResetItem: () => void;
 
@@ -62,12 +68,18 @@ export const DesktopLayout: React.FC<AppLayoutProps> = ({
   prevFrameItems,
   animatingItems,
   
+  // Configuration
+  offenseCount,
+  defenseCount,
+  onUpdateTeamConfig,
+
   // Refs
   stageRef,
   fileInputRef,
 
   // Handlers
   onLoadPlay,
+  onLoadPreset,
   onTriggerLoadPlay,
   onSavePlay,
   onExportVideo,
@@ -104,12 +116,16 @@ export const DesktopLayout: React.FC<AppLayoutProps> = ({
         isDirty={isDirty}
         isPlaying={isPlaying}
         onLoadPlay={onTriggerLoadPlay}
+        onLoadPreset={onLoadPreset}
         onSavePlay={onSavePlay}
         onExportVideo={onExportVideo}
         isRecording={isRecording}
         isExporting={isExporting}
         onSaveChanges={onSaveChanges}
         onDiscardChanges={onDiscardChanges}
+        offenseCount={offenseCount}
+        defenseCount={defenseCount}
+        onUpdateTeamConfig={onUpdateTeamConfig}
       />
 
       {/* CANVAS - Takes remaining space */}

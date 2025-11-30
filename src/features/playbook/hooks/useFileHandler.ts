@@ -44,6 +44,29 @@ export const useFileHandler = ({
     URL.revokeObjectURL(url);
   }, [frames]);
 
+  // Directly load a PlaybookData object (e.g. from presets)
+  const loadPlaybookData = useCallback(
+    (data: PlaybookData) => {
+      if (isDirty) {
+        const confirm = window.confirm(
+          "Discard unsaved changes before loading a new play?"
+        );
+        if (!confirm) return;
+        setEditingFrame(null);
+      }
+
+      if (isValidPlaybook(data)) {
+        setFrames(data.frames as DraggableItem[][]);
+        setCurrentFrameIndex(0);
+        setEditingFrame(null);
+        // alert(`Play "${data.name || "Unnamed Play"}" loaded successfully!`); // Optional: Removed alert for presets to be smoother
+      } else {
+        alert("Invalid playbook data.");
+      }
+    },
+    [isDirty, setEditingFrame, setFrames, setCurrentFrameIndex]
+  );
+
   // Load frames from a user-provided JSON file with validation.
   const loadPlay = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +117,7 @@ export const useFileHandler = ({
     fileInputRef,
     savePlay,
     loadPlay,
+    loadPlaybookData,
     triggerLoadPlay,
   };
 };

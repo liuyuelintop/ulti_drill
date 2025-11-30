@@ -60,6 +60,7 @@ export const calculateFieldTransform = (
  */
 export const constrainTransform = (
   current: ViewportTransform,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _container: ContainerSize
 ): ViewportTransform => {
     // TODO: Implement boundary constraints if needed (e.g., bounce back)

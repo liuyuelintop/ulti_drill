@@ -50,6 +50,7 @@ export const useCanvasViewport = (
     if (!enableResizeObserver) return;
 
     // Initial calculation
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     updateViewport();
 
     const handleResize = () => updateViewport();

@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "name": "Horizontal Stack",
+  "description": "Standard horizontal stack offense with 3 handlers and 4 cutters.",
+  "frames": [
+    [
+      { "id": "disc", "type": "disc", "x": 255, "y": 165, "label": "" },
+      { "id": "offense-1", "type": "offense", "x": 240, "y": 160, "label": "1" },
+      { "id": "offense-2", "type": "offense", "x": 180, "y": 100, "label": "2" },
+      { "id": "offense-3", "type": "offense", "x": 180, "y": 220, "label": "3" },
+      { "id": "offense-4", "type": "offense", "x": 400, "y": 60, "label": "4" },
+      { "id": "offense-5", "type": "offense", "x": 400, "y": 126, "label": "5" },
+      { "id": "offense-6", "type": "offense", "x": 400, "y": 193, "label": "6" },
+      { "id": "offense-7", "type": "offense", "x": 400, "y": 260, "label": "7" }
+    ]
+  ]
+}

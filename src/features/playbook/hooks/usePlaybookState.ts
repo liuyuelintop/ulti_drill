@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import type { DraggableItem } from "../types";
-import { getInitialFormation } from "../utils/formation";
+import { getInitialFormation, getStandardFormation } from "../utils/formation";
 import { cloneFrame } from "../utils/frames";
 
 /**
@@ -44,6 +44,51 @@ export const usePlaybookState = () => {
       });
     },
     [currentItems]
+  );
+
+  const updateTeamConfig = useCallback(
+    (offenseCount: number, defenseCount: number) => {
+      // Generate standard formation for the requested count to get default positions
+      const standardItems = getStandardFormation(offenseCount, defenseCount);
+      const sourceFrame = editingFrame || currentItems;
+      const newFrame: DraggableItem[] = [];
+
+      // Always keep the disc
+      const disc = sourceFrame.find((item) => item.id === "disc");
+      if (disc) {
+        newFrame.push(disc);
+      } else {
+        const standardDisc = standardItems.find((item) => item.id === "disc");
+        if (standardDisc) newFrame.push(standardDisc);
+      }
+
+      // Handle Offense
+      for (let i = 1; i <= offenseCount; i++) {
+        const id = `offense-${i}`;
+        const existing = sourceFrame.find((item) => item.id === id);
+        if (existing) {
+          newFrame.push(existing);
+        } else {
+          const standard = standardItems.find((item) => item.id === id);
+          if (standard) newFrame.push(standard);
+        }
+      }
+
+      // Handle Defense
+      for (let i = 1; i <= defenseCount; i++) {
+        const id = `defense-${i}`;
+        const existing = sourceFrame.find((item) => item.id === id);
+        if (existing) {
+          newFrame.push(existing);
+        } else {
+          const standard = standardItems.find((item) => item.id === id);
+          if (standard) newFrame.push(standard);
+        }
+      }
+
+      setEditingFrame(newFrame);
+    },
+    [editingFrame, currentItems]
   );
 
   const saveChanges = useCallback(() => {
@@ -131,6 +176,7 @@ export const usePlaybookState = () => {
     prevFrameItems,
     isDirty,
     updateEditingFrame,
+    updateTeamConfig,
     saveChanges,
     discardChanges,
     addFrame,

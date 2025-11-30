@@ -1,4 +1,5 @@
 import React from "react";
+import Konva from "konva";
 import { Group, Circle, Text } from "react-konva";
 import type { DraggableItem } from "../../types";
 import {
@@ -12,7 +13,7 @@ interface ItemsLayerProps {
   items: DraggableItem[];
   selectedItemId: string | null;
   isInteractive: boolean;
-  onDragEnd: (e: any, id: string) => void;
+  onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
   onSelect: (id: string | null) => void;
 }
 

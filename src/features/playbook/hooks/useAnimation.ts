@@ -32,6 +32,7 @@ export const useAnimation = ({
   useEffect(() => {
     // 1. If not playing, reset UI and exit
     if (!isPlaying) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAnimatingItems(null); // Safe to do synchronously here
       return;
     }

@@ -29,6 +29,7 @@ const App = () => {
     prevFrameItems,
     isDirty,
     updateEditingFrame,
+    updateTeamConfig,
     saveChanges,
     discardChanges,
     addFrame,
@@ -61,7 +62,13 @@ const App = () => {
     stageRef,
   });
 
-  const { fileInputRef, savePlay, loadPlay, triggerLoadPlay } = useFileHandler({
+  const {
+    fileInputRef,
+    savePlay,
+    loadPlay,
+    loadPlaybookData,
+    triggerLoadPlay,
+  } = useFileHandler({
     frames,
     setFrames,
     setCurrentFrameIndex,
@@ -74,6 +81,10 @@ const App = () => {
     isEditable: !isPlaying && !isRecording && !isExporting,
   };
 
+  // --- DERIVED STATE ---
+  const offenseCount = itemsToRender.filter((i) => i.type === "offense").length;
+  const defenseCount = itemsToRender.filter((i) => i.type === "defense").length;
+
   // --- HANDLERS ---
   const handleAddFrame = () => {
     if (isDirty) {
@@ -83,7 +94,7 @@ const App = () => {
     addFrame();
   };
 
-  const handleDragEnd = (e: any, id: string) => {
+  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>, id: string) => {
     if (!interactionState.isEditable) return;
     updateEditingFrame(id, e.target.x(), e.target.y());
   };
@@ -167,6 +178,8 @@ const App = () => {
     itemsToRender,
     prevFrameItems,
     animatingItems,
+    offenseCount,
+    defenseCount,
 
     // Refs
     stageRef,
@@ -174,6 +187,7 @@ const App = () => {
 
     // Handlers
     onLoadPlay: loadPlay,
+    onLoadPreset: loadPlaybookData,
     onTriggerLoadPlay: triggerLoadPlay,
     onSavePlay: savePlay,
     onExportVideo: handleExportVideo,
@@ -190,6 +204,7 @@ const App = () => {
     onNextFrame: handleNextFrame,
     onPrevFrame: handlePrevFrame,
     onTogglePlay: togglePlay,
+    onUpdateTeamConfig: updateTeamConfig,
   };
 
   // --- RENDER ---

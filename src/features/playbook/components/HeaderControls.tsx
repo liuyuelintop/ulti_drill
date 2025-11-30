@@ -1,5 +1,8 @@
 import React from "react";
 import { Button } from "../../../shared/ui/Button";
+import { TeamConfig } from "./TeamConfig";
+import { PresetSelector } from "./PresetSelector";
+import type { PlaybookData } from "../types";
 
 interface HeaderControlsProps {
   // Row 1: Branding + Status
@@ -10,6 +13,7 @@ interface HeaderControlsProps {
 
   // Row 2: File Operations
   onLoadPlay: () => void;
+  onLoadPreset: (data: PlaybookData) => void;
   onSavePlay: () => void;
   onExportVideo: () => void;
   isRecording: boolean;
@@ -18,6 +22,11 @@ interface HeaderControlsProps {
   // Row 3: Edit Bar
   onSaveChanges: () => void;
   onDiscardChanges: () => void;
+
+  // Configuration
+  offenseCount: number;
+  defenseCount: number;
+  onUpdateTeamConfig: (offense: number, defense: number) => void;
 }
 
 const HeaderControls: React.FC<HeaderControlsProps> = ({
@@ -26,12 +35,16 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
   isDirty,
   isPlaying,
   onLoadPlay,
+  onLoadPreset,
   onSavePlay,
   onExportVideo,
   isRecording,
   isExporting,
   onSaveChanges,
   onDiscardChanges,
+  offenseCount,
+  defenseCount,
+  onUpdateTeamConfig,
 }) => {
   const handleFileOperation = (operation: () => void) => {
     if (isDirty) {
@@ -111,83 +124,98 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
         </div>
       </div>
 
-      {/* ROW 2: File Operations (Always Visible) */}
+      {/* ROW 2: File Operations & Team Config */}
       <div
         className={`w-full px-6 py-3 border-t border-slate-100 transition-opacity duration-200 ${
-          isDirty ? 'opacity-60' : 'opacity-100'
+          isDirty ? 'opacity-60 pointer-events-none' : 'opacity-100'
         }`}
       >
-        <div className="flex flex-wrap gap-3 items-center">
-          <Button
-            onClick={() => handleFileOperation(onLoadPlay)}
-            variant="ghost"
-            size="md"
-            disabled={isRecording || isExporting}
-            aria-label="Load playbook from file"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          {/* File Operations Group */}
+          <div className="flex flex-wrap gap-3 items-center">
+            <Button
+              onClick={() => handleFileOperation(onLoadPlay)}
+              variant="ghost"
+              size="md"
+              disabled={isRecording || isExporting}
+              aria-label="Load playbook from file"
             >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="12" y1="18" x2="12" y2="12" />
-              <line x1="9" y1="15" x2="15" y2="15" />
-            </svg>
-            📁 Load Play
-          </Button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+              </svg>
+              📁 Load Play
+            </Button>
 
-          <Button
-            onClick={() => handleFileOperation(onSavePlay)}
-            variant="ghost"
-            size="md"
-            disabled={isRecording || isExporting}
-            aria-label="Save playbook to file"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
-            </svg>
-            💾 Save Play
-          </Button>
+            <PresetSelector
+              onSelect={(data) => handleFileOperation(() => onLoadPreset(data))}
+              disabled={isRecording || isExporting}
+            />
 
-          <Button
-            onClick={() => handleFileOperation(onExportVideo)}
-            variant="ghost"
-            size="md"
-            disabled={isRecording || isExporting || isDirty}
-            isLoading={isExporting}
-            aria-label="Export animation as video"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+            <Button
+              onClick={() => handleFileOperation(onSavePlay)}
+              variant="ghost"
+              size="md"
+              disabled={isRecording || isExporting}
+              aria-label="Save playbook to file"
             >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            🎥 Export Video
-          </Button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              💾 Save Play
+            </Button>
+
+            <Button
+              onClick={() => handleFileOperation(onExportVideo)}
+              variant="ghost"
+              size="md"
+              disabled={isRecording || isExporting || isDirty}
+              isLoading={isExporting}
+              aria-label="Export animation as video"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              🎥 Export Video
+            </Button>
+          </div>
+
+          {/* Team Configuration */}
+          <TeamConfig
+            offenseCount={offenseCount}
+            defenseCount={defenseCount}
+            onUpdate={onUpdateTeamConfig}
+          />
         </div>
       </div>
 
