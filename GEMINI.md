@@ -103,6 +103,8 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 
 ## Architecture & Key Files
 
+### Architecture & Key Files
+
 ### Core Logic (Custom Hooks)
 
 - **`src/features/playbook/hooks/usePlaybookState.ts`**: Manages the core data model for the playbook (frames, editing state, item selection, and manipulation logic).
@@ -114,9 +116,10 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
   - `deleteFrame`: Removes current frame, intelligently adjusting current frame index.
   - `clearAllFrames`: Resets to initial formation.
   - `resetToPrevious`: Resets selected item to **current frame's saved position**.
+  - **`updateTeamConfig`**: Dynamically adjusts offense/defense player counts, positioning new defenders relative to existing offense players with formation-aware offsets.
 - **`src/features/playbook/hooks/useAnimation.ts`**: Manages the animation playback loop, `isPlaying` state, and updates `animatingItems` for canvas rendering.
 - **`src/features/playbook/hooks/useVideoExport.ts`**: Handles video recording of the canvas, manages `isRecording` and `isExporting` states, and generates video files (MP4/WebM). Now explicitly uses `avc3` codec for improved stability during export.
-- **`src/features/playbook/hooks/useFileHandler.ts`**: Manages saving and loading playbook data to/from JSON files.
+- **`src/features/playbook/hooks/useFileHandler.ts`**: Manages saving and loading playbook data to/from JSON files, now includes prompting for play name on save.
 - **`src/features/playbook/hooks/useCanvasViewport.ts`**: Calculates optimal viewport scale and position for mobile canvas (fit-width mode with padding).
 - **`src/shared/hooks/useIsMobile.ts`**: Detects mobile devices using media query (< 768px breakpoint).
 - **`src/shared/hooks/useOrientation.ts`**: Detects screen orientation (landscape/portrait) for mobile layout optimization.
@@ -145,6 +148,9 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 - **`src/features/playbook/components/HelpFooter.tsx`**: Standalone tips component
   - Keyboard shortcuts and usage instructions
   - Fully reusable and self-contained
+- **`src/features/playbook/components/TeamConfig.tsx`**: New component for dynamic offense/defense player configuration.
+- **`src/features/playbook/components/PlaySelector.tsx`**: New component for loading built-in plays and importing from file.
+- **`src/features/playbook/components/PresetSelector.tsx`**: Component for loading built-in formations/presets.
 
 #### Mobile Layout
 
@@ -156,7 +162,6 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
   - Single-row control layout: [Play] [Reset] [Duplicate] [Delete] [Timeline] [Add]
   - Icon-only operation buttons (32×32px) with title tooltips
   - Semi-transparent white background (bg-white/90) with backdrop blur
-  - Hamburger menu drawer for file operations (Save/Load/Export/Clear All)
 - **`src/features/playbook/components/MobileCanvas.tsx`**: Mobile-optimized Konva canvas
   - Fixed viewport (no pan/zoom gestures to avoid conflicts with dragging)
   - Automatic fit-width scaling with padding
@@ -179,9 +184,13 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 ### Design & Configuration
 
 - **`src/shared/design/tokens.ts`**: Centralized design system definitions (Colors, Typography, Spacing, Shadows)
-- **`src/features/playbook/constants/canvas.ts`**: Application constants
+- **`src/features/playbook/constants/canvas.ts`**: Application constants, now includes `DEFENSE_OFFSETS` for precise defender placement.
   - Field dimensions: FIELD_LENGTH (880px), FIELD_WIDTH (320px)
   - Player/disc sizes, colors from design tokens
+- **`src/presets/`**: Centralized directory for built-in plays and formations.
+  - **`src/presets/formations/`**: JSON files for default team setups (e.g., Vertical Stack, Horizontal Stack).
+  - **`src/presets/plays/`**: JSON files for pre-designed game plays (e.g., Facial).
+  - **`src/presets/index.ts`**: Registry for accessing built-in `PRESETS` and `PLAYS`.
 - **`src/index.css`**: Global styles, Tailwind imports, and custom CSS variables
 - **`tailwind.config.js`**: Tailwind configuration extending theme with design tokens
 
@@ -237,18 +246,29 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 
 ## Recent Improvements
 
-### Mobile Optimization (Latest)
+### Dynamic Player Configuration & Play/Preset Management (New)
 
-- **Landscape-First Design:** Force landscape orientation for optimal field viewing (2.7:1 aspect ratio)
-- **Portrait Warning Screen:** Fullscreen prompt encouraging users to rotate device
-- **Space Optimization:** Reduced bottom panel from 193-245px to 60-108px (69% improvement)
-- **Canvas Visibility:** Increased from 19-34% to 56-69% of screen height
-- **Compact Controls:** Merged two control rows into single row with icon-only buttons
-- **Field Fully Visible:** No scrolling required in landscape mode (667×375px)
-- **Touch Accessibility:** All buttons meet 32×32px minimum touch targets
-- **Semi-Transparent UI:** Bottom panel uses bg-white/90 with backdrop blur
+-   **Dynamic Offense/Defense Players:** Implemented the ability to configure both offense and defense players (1-7 each) via a new `TeamConfig` component.
+-   **Configurable Defense Positioning:** When adding defense players, their initial positions are now intelligently calculated relative to their corresponding offense players, using formation-aware offsets (Vertical vs. Horizontal Stack). Offsets are centralized in `src/features/playbook/constants/canvas.ts` for easy management.
+-   **Built-in Play/Preset Support:**
+    -   Organized JSON data into `src/presets/formations/` (for static starting layouts) and `src/presets/plays/` (for full game scenarios).
+    -   Introduced dedicated `PlaySelector` and `PresetSelector` components to load these built-in options directly, separating them from local file import.
+-   **Improved Save/Load UX:**
+    -   When saving a play, the user is now prompted to enter a name, which is used for both the JSON file's `name` property and the downloaded filename.
+    -   Team configuration changes (adding/removing players) now auto-save if no other edits are present, avoiding unnecessary "unsaved changes" warnings.
 
-### Layout Reorganization
+### Mobile Optimization (Previous)
+
+-   **Landscape-First Design:** Force landscape orientation for optimal field viewing (2.7:1 aspect ratio)
+-   **Portrait Warning Screen:** Fullscreen prompt encouraging users to rotate device
+-   **Space Optimization:** Reduced bottom panel from 193-245px to 60-108px (69% improvement)
+-   **Canvas Visibility:** Increased from 19-34% to 56-69% of screen height
+-   **Compact Controls:** Merged two control rows into single row with icon-only buttons
+-   **Field Fully Visible:** No scrolling required in landscape mode (667×375px)
+-   **Touch Accessibility:** All buttons meet 32×32px minimum touch targets
+-   **Semi-Transparent UI:** Bottom panel uses bg-white/90 with backdrop blur
+
+### Layout Reorganization (Previous)
 
 - Refactored header into unified three-row component
 - Redesigned timeline with compact, organized layout
@@ -256,14 +276,14 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 - Full-screen flex layout with sticky header
 - Separate desktop and mobile layouts with adaptive routing
 
-### Bug Fixes
+### Bug Fixes (Previous)
 
 - Fixed Reset Item to reset to current frame's saved position (was incorrectly resetting to previous frame)
 - Reset Item now only enabled when `isDirty === true`
 - Fixed canvas gesture conflicts on mobile by disabling pan/zoom
 - Known Issue: iPhone 13 on Chrome iOS exhibits an unresolvable WebKit viewport/orientation bug where initial landscape detection is incorrect.
 
-### New Features
+### New Features (Previous)
 
 - Duplicate Frame functionality
 - Responsive canvas with dynamic scaling
@@ -272,7 +292,7 @@ Dedicated **HelpFooter** component with keyboard shortcuts and usage tips displa
 - Mobile/desktop detection and adaptive layouts
 - Orientation detection for mobile devices
 
-### UI Polish
+### UI Polish (Previous)
 
 - Emerald green for primary actions (play button, save, active frames)
 - Danger zone with red background for destructive actions

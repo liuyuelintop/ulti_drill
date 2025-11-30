@@ -14,6 +14,7 @@ interface MobileCanvasProps {
   selectedItemId: string | null;
   isPlaying: boolean;
   isRecording: boolean;
+  readOnly?: boolean;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
   onSelect: (id: string | null) => void;
 }
@@ -27,6 +28,7 @@ export const MobileCanvas = forwardRef<Konva.Stage, MobileCanvasProps>(
       selectedItemId,
       isPlaying,
       isRecording,
+      readOnly = false,
       onDragEnd,
       onSelect,
     },
@@ -70,7 +72,7 @@ export const MobileCanvas = forwardRef<Konva.Stage, MobileCanvasProps>(
             <ItemsLayer
               items={itemsRendered}
               selectedItemId={selectedItemId}
-              isInteractive={!isPlaying && !isRecording}
+              isInteractive={!readOnly && !isPlaying && !isRecording}
               onDragEnd={onDragEnd}
               onSelect={onSelect}
             />

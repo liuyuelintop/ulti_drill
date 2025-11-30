@@ -166,7 +166,7 @@ const App = () => {
   }, [selectedItemId, selectItem]);
 
   // --- PROPS BUNDLING ---
-  const layoutProps = {
+  const desktopLayoutProps = {
     // State
     frames,
     currentFrameIndex,
@@ -207,11 +207,26 @@ const App = () => {
     onUpdateTeamConfig: updateTeamConfig,
   };
 
+  const mobileLayoutProps = {
+    currentFrameIndex,
+    frames,
+    isPlaying,
+    itemsToRender,
+    animatingItems,
+    prevFrameItems,
+    stageRef,
+    onTogglePlay: togglePlay,
+    onSelectFrame: handleSelectFrame,
+    onLoadPreset: loadPlaybookData,
+    onLoadPlay: loadPlay,
+    onTriggerLoadPlay: triggerLoadPlay,
+  };
+
   // --- RENDER ---
   return isMobile ? (
-    <MobileLayout {...layoutProps} />
+    <MobileLayout {...mobileLayoutProps} />
   ) : (
-    <DesktopLayout {...layoutProps} />
+    <DesktopLayout {...desktopLayoutProps} />
   );
 };
 
