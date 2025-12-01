@@ -9,6 +9,8 @@ import {
 import { useIsMobile } from "../shared/hooks/useIsMobile";
 import { DesktopLayout } from "./layouts/DesktopLayout";
 import { MobileLayout } from "./layouts/MobileLayout";
+import { toLogical } from "../features/playbook/utils/coordinates";
+import { DEFAULT_STANDARD } from "../features/playbook/constants/standards";
 
 const App = () => {
   // --- RESPONSIVE CHECK ---
@@ -96,7 +98,19 @@ const App = () => {
 
   const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>, id: string) => {
     if (!interactionState.isEditable) return;
-    updateEditingFrame(id, e.target.x(), e.target.y());
+    
+    const stage = e.target.getStage();
+    if (!stage) return;
+
+    // Calculate current scale from stage dimensions
+    // scale = pixelWidth / logicalWidth
+    const scale = stage.width() / DEFAULT_STANDARD.dimensions.length;
+
+    // Convert pixel coordinates back to logical units (Yards)
+    const logicalX = toLogical(e.target.x(), scale);
+    const logicalY = toLogical(e.target.y(), scale);
+
+    updateEditingFrame(id, logicalX, logicalY);
   };
 
   const handleClearAllFrames = () => {

@@ -3,8 +3,10 @@ import Konva from "konva";
 import { Group, Circle, Text } from "react-konva";
 import type { DraggableItem } from "../../types";
 import {
-  DISC_RADIUS_PX,
-  PLAYER_RADIUS_PX,
+  DISC_RADIUS_LOGICAL,
+  PLAYER_RADIUS_LOGICAL,
+  MIN_DISC_RADIUS_PX,
+  MIN_PLAYER_RADIUS_PX,
   SELECTION_STROKE_WIDTH,
   COLORS,
 } from "../../constants/canvas";
@@ -35,13 +37,11 @@ export const ItemsLayer: React.FC<ItemsLayerProps> = ({
       const x = toCanvas(item.x, scale);
       const y = toCanvas(item.y, scale);
 
-      // Token size logic:
-      // We want players to be visible even if the field is tiny.
-      // Ideally, they scale with the field, but have a min/max size.
-      // For now, we stick to the fixed pixel size for clarity as per the plan "Token Scaling"
-      // Or we can scale them slightly but clamp.
-      // Let's stick to fixed pixel size for tokens to ensure touch targets are constant.
-      const radius = item.type === "disc" ? DISC_RADIUS_PX : PLAYER_RADIUS_PX;
+      // Proportional Scaling with Minimum Size Clamp
+      const logicalRadius = item.type === "disc" ? DISC_RADIUS_LOGICAL : PLAYER_RADIUS_LOGICAL;
+      const minPixelRadius = item.type === "disc" ? MIN_DISC_RADIUS_PX : MIN_PLAYER_RADIUS_PX;
+      
+      const radius = Math.max(toCanvas(logicalRadius, scale), minPixelRadius);
 
       let gradientStartColor, gradientEndColor, shadowColor;
 
@@ -127,22 +127,22 @@ export const ItemsLayer: React.FC<ItemsLayerProps> = ({
             <>
               <Text
                 text={item.label}
-                fontSize={14}
+                fontSize={Math.max(10, radius)} // Scale text too, but min 10px
                 fontFamily="Outfit, sans-serif"
                 fill="rgba(0, 0, 0, 0.3)"
                 fontStyle="bold"
-                offsetX={3}
-                offsetY={5}
+                offsetX={radius / 4}
+                offsetY={radius / 3}
                 listening={false}
               />
               <Text
                 text={item.label}
-                fontSize={14}
+                fontSize={Math.max(10, radius)}
                 fontFamily="Outfit, sans-serif"
                 fill="white"
                 fontStyle="bold"
-                offsetX={4}
-                offsetY={6}
+                offsetX={radius / 4 - 1}
+                offsetY={radius / 3 - 1}
                 listening={false}
               />
             </>

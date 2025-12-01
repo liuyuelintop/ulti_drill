@@ -35,7 +35,7 @@ export const FrameActions: React.FC<FrameActionsProps> = ({
           }
           aria-label="Reset selected item"
         >
-          🔄 Reset
+          🔄 Reset Item
         </Button>
 
         <Button
@@ -46,7 +46,7 @@ export const FrameActions: React.FC<FrameActionsProps> = ({
           title="Duplicate current frame"
           aria-label="Duplicate current frame"
         >
-          📋 Duplicate
+          📋 Duplicate Frame
         </Button>
       </div>
     </div>

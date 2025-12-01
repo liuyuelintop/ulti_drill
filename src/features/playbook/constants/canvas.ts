@@ -1,9 +1,19 @@
 import { colors } from "../../../shared/design/tokens";
 
-// Player and Disc Sizes (Logical Units - approx 0.7 yards/meters diameter)
-// We still need pixel sizes for the tokens themselves to ensure visibility
+// Player and Disc Sizes
+// Logical Sizes (in Yards/Meters) tuned for Desktop "Diagram" look
+// Scale ~15px/yd -> Player ~15px, Disc ~9px
+export const PLAYER_RADIUS_LOGICAL = 1.0;
+export const DISC_RADIUS_LOGICAL = 0.6;
+
+// Minimum Pixel Sizes (to ensure visibility on small screens)
+export const MIN_PLAYER_RADIUS_PX = 8;
+export const MIN_DISC_RADIUS_PX = 5;
+
+// Legacy/Reference pixel sizes (optional, but good to keep for defaults)
 export const PLAYER_RADIUS_PX = 14;
 export const DISC_RADIUS_PX = 8;
+
 export const GHOST_OPACITY = 0.4;
 export const SELECTION_STROKE_WIDTH = 2;
 

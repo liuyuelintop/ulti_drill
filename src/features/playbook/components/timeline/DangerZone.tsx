@@ -23,7 +23,7 @@ export const DangerZone: React.FC<DangerZoneProps> = ({
           title="Delete current frame"
           aria-label="Delete current frame"
         >
-          🗑️ Delete
+          🗑️ Delete Current Frame
         </Button>
 
         <Button
@@ -34,7 +34,7 @@ export const DangerZone: React.FC<DangerZoneProps> = ({
           title="Clear all frames"
           aria-label="Clear all frames"
         >
-          ⚠️ Clear All
+          ⚠️ Clear All Frames
         </Button>
       </div>
     </div>
