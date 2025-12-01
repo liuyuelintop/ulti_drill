@@ -1,4 +1,4 @@
-import { FIELD_LENGTH, FIELD_WIDTH } from "../constants/canvas";
+import { DEFAULT_STANDARD } from "../constants/standards";
 
 export interface ViewportTransform {
   scale: number;
@@ -22,14 +22,15 @@ export const calculateFieldTransform = (
   padding: number = 20
 ): ViewportTransform => {
   const { width: cW, height: cH } = container;
+  const { length, width } = DEFAULT_STANDARD.dimensions;
   
   // Available space after padding
   const availW = cW - padding * 2;
   const availH = cH - padding * 2;
 
   // Ratios
-  const ratioW = availW / FIELD_LENGTH;
-  const ratioH = availH / FIELD_WIDTH;
+  const ratioW = availW / length;
+  const ratioH = availH / width;
 
   let scale = 1;
 
@@ -48,8 +49,8 @@ export const calculateFieldTransform = (
   }
 
   // Always Center
-  const x = (cW - FIELD_LENGTH * scale) / 2;
-  const y = (cH - FIELD_WIDTH * scale) / 2;
+  const x = (cW - length * scale) / 2;
+  const y = (cH - width * scale) / 2;
 
   return { scale, x, y };
 };

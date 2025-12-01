@@ -4,14 +4,62 @@
   "description": "Standard vertical stack offense with 7 players.",
   "frames": [
     [
-      { "id": "disc", "type": "disc", "x": 255, "y": 165, "label": "" },
-      { "id": "offense-1", "type": "offense", "x": 240, "y": 160, "label": "1" },
-      { "id": "offense-2", "type": "offense", "x": 180, "y": 240, "label": "2" },
-      { "id": "offense-3", "type": "offense", "x": 380, "y": 160, "label": "3" },
-      { "id": "offense-4", "type": "offense", "x": 430, "y": 160, "label": "4" },
-      { "id": "offense-5", "type": "offense", "x": 480, "y": 160, "label": "5" },
-      { "id": "offense-6", "type": "offense", "x": 530, "y": 160, "label": "6" },
-      { "id": "offense-7", "type": "offense", "x": 580, "y": 160, "label": "7" }
+      {
+        "id": "disc",
+        "type": "disc",
+        "x": 31.88,
+        "y": 19.13,
+        "label": ""
+      },
+      {
+        "id": "offense-1",
+        "type": "offense",
+        "x": 30,
+        "y": 18.5,
+        "label": "1"
+      },
+      {
+        "id": "offense-2",
+        "type": "offense",
+        "x": 22.5,
+        "y": 30,
+        "label": "2"
+      },
+      {
+        "id": "offense-3",
+        "type": "offense",
+        "x": 47.5,
+        "y": 18.5,
+        "label": "3"
+      },
+      {
+        "id": "offense-4",
+        "type": "offense",
+        "x": 53.75,
+        "y": 18.5,
+        "label": "4"
+      },
+      {
+        "id": "offense-5",
+        "type": "offense",
+        "x": 60,
+        "y": 18.5,
+        "label": "5"
+      },
+      {
+        "id": "offense-6",
+        "type": "offense",
+        "x": 66.25,
+        "y": 18.5,
+        "label": "6"
+      },
+      {
+        "id": "offense-7",
+        "type": "offense",
+        "x": 72.5,
+        "y": 18.5,
+        "label": "7"
+      }
     ]
   ]
 }

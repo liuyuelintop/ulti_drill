@@ -2,7 +2,8 @@ import { forwardRef, useState, useEffect, useRef } from "react";
 import { Stage, Layer } from "react-konva";
 import Konva from "konva";
 import type { DraggableItem } from "../types";
-import { FIELD_LENGTH, FIELD_WIDTH } from "../constants/canvas";
+import { calculateScale, toCanvas } from "../utils/coordinates";
+import { DEFAULT_STANDARD } from "../constants/standards";
 import FieldLayer from "./canvas/FieldLayer";
 import GhostLayer from "./canvas/GhostLayer";
 import ItemsLayer from "./canvas/ItemsLayer";
@@ -36,17 +37,18 @@ const PlaybookCanvas = forwardRef<Konva.Stage, PlaybookCanvasProps>(
       isPlaying && animatingItems ? animatingItems : currentItems;
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const [canvasScale, setCanvasScale] = useState(1);
+    const [scale, setScale] = useState(1);
 
     useEffect(() => {
       const updateScale = () => {
         if (containerRef.current) {
-          const containerWidth = containerRef.current.offsetWidth;
-          const containerHeight = containerRef.current.offsetHeight;
-          const scaleX = containerWidth / FIELD_LENGTH;
-          const scaleY = containerHeight / FIELD_WIDTH;
-          const newScale = Math.min(scaleX, scaleY, 1);
-          setCanvasScale(newScale);
+          const newScale = calculateScale(
+            containerRef.current.offsetWidth,
+            containerRef.current.offsetHeight,
+            DEFAULT_STANDARD,
+            0
+          );
+          setScale(newScale);
         }
       };
 
@@ -56,22 +58,18 @@ const PlaybookCanvas = forwardRef<Konva.Stage, PlaybookCanvasProps>(
       return () => resizeObserver.disconnect();
     }, []);
 
+    const stageWidth = toCanvas(DEFAULT_STANDARD.dimensions.length, scale);
+    const stageHeight = toCanvas(DEFAULT_STANDARD.dimensions.width, scale);
+
     return (
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-[0_8px_40px_rgba(0,0,0,0.08)] relative">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-[0_8px_40px_rgba(0,0,0,0.08)] relative h-full flex flex-col">
         <div
           ref={containerRef}
-          className="rounded-xl overflow-hidden shadow-inner border border-slate-100 flex items-center justify-center"
-          style={{ minHeight: `${FIELD_WIDTH}px` }}
+          className="rounded-xl overflow-hidden shadow-inner border border-slate-100 flex items-center justify-center flex-1 w-full"
         >
           <Stage
-            width={FIELD_LENGTH}
-            height={FIELD_WIDTH}
-            scaleX={canvasScale}
-            scaleY={canvasScale}
-            style={{
-              width: `${FIELD_LENGTH * canvasScale}px`,
-              height: `${FIELD_WIDTH * canvasScale}px`,
-            }}
+            width={stageWidth}
+            height={stageHeight}
             ref={ref}
             onMouseDown={(e) => {
               const clickedOnEmpty = e.target === e.target.getStage();
@@ -83,14 +81,19 @@ const PlaybookCanvas = forwardRef<Konva.Stage, PlaybookCanvasProps>(
             }}
           >
             <Layer>
-              <FieldLayer />
-              <GhostLayer prevFrameItems={prevFrameItems} showGhosts={!isPlaying} />
+              <FieldLayer scale={scale} standard={DEFAULT_STANDARD} />
+              <GhostLayer 
+                prevFrameItems={prevFrameItems} 
+                showGhosts={!isPlaying} 
+                scale={scale}
+              />
               <ItemsLayer
                 items={itemsRendered}
                 selectedItemId={selectedItemId}
                 isInteractive={!isPlaying && !isRecording}
                 onDragEnd={onDragEnd}
                 onSelect={onSelect}
+                scale={scale}
               />
             </Layer>
           </Stage>

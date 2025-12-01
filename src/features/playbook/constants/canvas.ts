@@ -1,30 +1,24 @@
 import { colors } from "../../../shared/design/tokens";
 
-// Field Dimensions (8px scale for yard markings)
-export const SCALE = 8;
-export const FIELD_LENGTH = 110 * SCALE; // 880px
-export const FIELD_WIDTH = 40 * SCALE; // 320px
-export const ENDZONE_LENGTH = 20 * SCALE; // 160px
-export const BRICK_MARK = 18 * SCALE; // 144px from goal line
+// Player and Disc Sizes (Logical Units - approx 0.7 yards/meters diameter)
+// We still need pixel sizes for the tokens themselves to ensure visibility
+export const PLAYER_RADIUS_PX = 14;
+export const DISC_RADIUS_PX = 8;
+export const GHOST_OPACITY = 0.4;
+export const SELECTION_STROKE_WIDTH = 2;
 
-// Player and Disc Sizes
-export const PLAYER_RADIUS = 14; // px
-export const PLAYER_DIAMETER = 2 * PLAYER_RADIUS;
-export const DISC_RADIUS = 8; // px
-export const GHOST_OPACITY = 0.4; // Increased opacity for better visibility on bright field
-export const SELECTION_STROKE_WIDTH = 2; // px
-
-// Defense positioning offsets
-export const DEFENSE_OFFSETS = {
+// Default logical offsets (in Units)
+// Assuming standard unit is ~1 yard/meter.
+export const DEFENSE_OFFSETS_LOGICAL = {
   VERTICAL: {
-    HANDLER: { x: PLAYER_RADIUS, y: -PLAYER_DIAMETER },
-    DUMP: { x: PLAYER_DIAMETER, y: -PLAYER_RADIUS },
-    STACK: { x: -PLAYER_RADIUS, y: PLAYER_RADIUS },
+    HANDLER: { x: 1, y: -2 },
+    DUMP: { x: 2, y: -1 },
+    STACK: { x: -1, y: 1 },
   },
   HORIZONTAL: {
-    HANDLER_CENTER: { x: PLAYER_RADIUS, y: -PLAYER_RADIUS },
-    HANDLER_WING: { x: PLAYER_DIAMETER, y: 0 },
-    CUTTER: { x: -PLAYER_DIAMETER, y: 0 },
+    HANDLER_CENTER: { x: 1, y: -1 },
+    HANDLER_WING: { x: 2, y: 0 },
+    CUTTER: { x: -2, y: 0 },
   },
 };
 

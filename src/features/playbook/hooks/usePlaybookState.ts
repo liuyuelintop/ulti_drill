@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import type { DraggableItem } from "../types";
 import { getInitialFormation, getStandardFormation } from "../utils/formation";
 import { cloneFrame } from "../utils/frames";
-import { DEFENSE_OFFSETS } from "../constants/canvas";
+import { DEFENSE_OFFSETS_LOGICAL } from "../constants/canvas";
 
 /**
  * usePlaybookState
@@ -35,6 +35,7 @@ export const usePlaybookState = () => {
 
   // --- Editing Logic ---
   
+  // Expects logical coordinates (Yards/Meters)
   const updateEditingFrame = useCallback(
     (id: string, x: number, y: number) => {
       setEditingFrame((prev) => {
@@ -80,7 +81,7 @@ export const usePlaybookState = () => {
       const off4 = sourceFrame.find((i) => i.id === "offense-4");
       const off5 = sourceFrame.find((i) => i.id === "offense-5");
       const isHorizontalStack =
-        off4 && off5 && Math.abs(off4.x - off5.x) < 20;
+        off4 && off5 && Math.abs(off4.x - off5.x) < 5; // Tolerance reduced for logical units
 
       // Handle Defense (Anchor to Offense with Formation Offsets)
       for (let i = 1; i <= defenseCount; i++) {
@@ -93,38 +94,38 @@ export const usePlaybookState = () => {
           newFrame.push(existing);
         } else if (offensePartner) {
           // NEW DEFENDER: Calculate position based on Offense partner
-          let offsetX = 20;
-          let offsetY = 20;
+          let offsetX = 2; // Default 2 yards
+          let offsetY = 2;
 
           if (isHorizontalStack) {
             // Horizontal Stack Offsets
             if (i === 1) {
               // Center Handler
-              offsetX = DEFENSE_OFFSETS.HORIZONTAL.HANDLER_CENTER.x;
-              offsetY = DEFENSE_OFFSETS.HORIZONTAL.HANDLER_CENTER.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.HANDLER_CENTER.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.HANDLER_CENTER.y;
             } else if (i === 2 || i === 3) {
               // Wing Handlers
-              offsetX = DEFENSE_OFFSETS.HORIZONTAL.HANDLER_WING.x;
-              offsetY = DEFENSE_OFFSETS.HORIZONTAL.HANDLER_WING.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.HANDLER_WING.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.HANDLER_WING.y;
             } else {
               // Cutters (4-7)
-              offsetX = DEFENSE_OFFSETS.HORIZONTAL.CUTTER.x;
-              offsetY = DEFENSE_OFFSETS.HORIZONTAL.CUTTER.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.CUTTER.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.HORIZONTAL.CUTTER.y;
             }
           } else {
             // Vertical Stack Offsets (Default)
             if (i === 1) {
               // Handler
-              offsetX = DEFENSE_OFFSETS.VERTICAL.HANDLER.x;
-              offsetY = DEFENSE_OFFSETS.VERTICAL.HANDLER.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.VERTICAL.HANDLER.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.VERTICAL.HANDLER.y;
             } else if (i === 2) {
               // Dump
-              offsetX = DEFENSE_OFFSETS.VERTICAL.DUMP.x;
-              offsetY = DEFENSE_OFFSETS.VERTICAL.DUMP.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.VERTICAL.DUMP.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.VERTICAL.DUMP.y;
             } else {
               // Stack (3-7)
-              offsetX = DEFENSE_OFFSETS.VERTICAL.STACK.x;
-              offsetY = DEFENSE_OFFSETS.VERTICAL.STACK.y;
+              offsetX = DEFENSE_OFFSETS_LOGICAL.VERTICAL.STACK.x;
+              offsetY = DEFENSE_OFFSETS_LOGICAL.VERTICAL.STACK.y;
             }
           }
 

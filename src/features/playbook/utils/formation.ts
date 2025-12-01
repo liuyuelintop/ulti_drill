@@ -1,13 +1,17 @@
 import type { DraggableItem, ItemType } from "../types";
-import { BRICK_MARK, ENDZONE_LENGTH, FIELD_WIDTH } from "../constants/canvas";
+import { DEFAULT_STANDARD } from "../constants/standards";
 
 export const getStandardFormation = (
   offenseCount: number = 7,
   defenseCount: number = 0
 ) => {
   const items: DraggableItem[] = [];
-  const centerY = FIELD_WIDTH / 2;
-  const discX = ENDZONE_LENGTH + BRICK_MARK;
+  
+  // Use logical dimensions from the standard
+  const { width, endzoneLength, brickMark } = DEFAULT_STANDARD.dimensions;
+  
+  const centerY = width / 2;
+  const discX = endzoneLength + brickMark;
 
   const addPlayer = (
     id: string,
@@ -20,7 +24,7 @@ export const getStandardFormation = (
   };
 
   // Always add disc
-  addPlayer("disc", "disc", discX + 15, centerY + 5, "");
+  addPlayer("disc", "disc", discX + 2, centerY + 0.5, "");
 
   // --- Offense Setup (Vertical Stack Base) ---
   // Handler 1 (thrower)
@@ -29,14 +33,14 @@ export const getStandardFormation = (
   }
   // Handler 2 (dump)
   if (offenseCount >= 2) {
-    addPlayer("offense-2", "offense", discX - 60, centerY + 80, "2");
+    addPlayer("offense-2", "offense", discX - 8, centerY + 10, "2");
   }
   // Stack players
   for (let i = 0; i < offenseCount - 2; i++) {
     addPlayer(
       `offense-${i + 3}`,
       "offense",
-      discX + 140 + i * 50,
+      discX + 18 + i * 6, // ~18 yards deep, 6 yard spacing
       centerY,
       (i + 3).toString()
     );
@@ -53,8 +57,8 @@ export const getStandardFormation = (
       addPlayer(
         `defense-${i}`,
         "defense",
-        offensePlayer.x + 20,
-        offensePlayer.y + 20,
+        offensePlayer.x + 2,
+        offensePlayer.y + 2,
         i.toString()
       );
     } else {
@@ -63,8 +67,8 @@ export const getStandardFormation = (
       addPlayer(
         `defense-${i}`,
         "defense",
-        discX + 100 + (i - 1) * 40,
-        centerY + 100,
+        discX + 12 + (i - 1) * 5,
+        centerY + 12,
         i.toString()
       );
     }

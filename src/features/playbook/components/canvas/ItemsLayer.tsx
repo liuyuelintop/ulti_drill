@@ -3,11 +3,12 @@ import Konva from "konva";
 import { Group, Circle, Text } from "react-konva";
 import type { DraggableItem } from "../../types";
 import {
-  DISC_RADIUS,
-  PLAYER_RADIUS,
+  DISC_RADIUS_PX,
+  PLAYER_RADIUS_PX,
   SELECTION_STROKE_WIDTH,
   COLORS,
 } from "../../constants/canvas";
+import { toCanvas } from "../../utils/coordinates";
 
 interface ItemsLayerProps {
   items: DraggableItem[];
@@ -15,6 +16,7 @@ interface ItemsLayerProps {
   isInteractive: boolean;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>, id: string) => void;
   onSelect: (id: string | null) => void;
+  scale: number;
 }
 
 export const ItemsLayer: React.FC<ItemsLayerProps> = ({
@@ -23,11 +25,23 @@ export const ItemsLayer: React.FC<ItemsLayerProps> = ({
   isInteractive,
   onDragEnd,
   onSelect,
+  scale,
 }) => (
   <>
     {items.map((item) => {
       const isSelected = selectedItemId === item.id;
-      const radius = item.type === "disc" ? DISC_RADIUS : PLAYER_RADIUS;
+      
+      // Project logical coordinates to canvas pixels
+      const x = toCanvas(item.x, scale);
+      const y = toCanvas(item.y, scale);
+
+      // Token size logic:
+      // We want players to be visible even if the field is tiny.
+      // Ideally, they scale with the field, but have a min/max size.
+      // For now, we stick to the fixed pixel size for clarity as per the plan "Token Scaling"
+      // Or we can scale them slightly but clamp.
+      // Let's stick to fixed pixel size for tokens to ensure touch targets are constant.
+      const radius = item.type === "disc" ? DISC_RADIUS_PX : PLAYER_RADIUS_PX;
 
       let gradientStartColor, gradientEndColor, shadowColor;
 
@@ -48,8 +62,8 @@ export const ItemsLayer: React.FC<ItemsLayerProps> = ({
       return (
         <Group
           key={item.id}
-          x={item.x}
-          y={item.y}
+          x={x}
+          y={y}
           draggable={isInteractive}
           onDragEnd={(e) => onDragEnd(e, item.id)}
           onClick={(e) => {

@@ -1,11 +1,12 @@
-import { forwardRef, useRef } from "react";
+import { forwardRef, useRef, useState, useEffect } from "react";
 import { Stage, Layer } from "react-konva";
 import Konva from "konva";
 import type { DraggableItem } from "../types";
+import { calculateScale, toCanvas } from "../utils/coordinates";
+import { DEFAULT_STANDARD } from "../constants/standards";
 import FieldLayer from "./canvas/FieldLayer";
 import GhostLayer from "./canvas/GhostLayer";
 import ItemsLayer from "./canvas/ItemsLayer";
-import { useCanvasViewport } from "../hooks/useCanvasViewport";
 
 interface MobileCanvasProps {
   currentItems: DraggableItem[];
@@ -36,13 +37,29 @@ export const MobileCanvas = forwardRef<Konva.Stage, MobileCanvasProps>(
   ) => {
     const itemsRendered = isPlaying && animatingItems ? animatingItems : currentItems;
     const containerRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
 
-    // --- Fixed Viewport (No gestures) ---
-    // Automatically calculates optimal scale/position, but stays fixed
-    const { scale, position } = useCanvasViewport(containerRef, {
-        mode: 'fit-width',
-        padding: 10
-    });
+    useEffect(() => {
+      const updateScale = () => {
+        if (containerRef.current) {
+          const newScale = calculateScale(
+            containerRef.current.offsetWidth,
+            containerRef.current.offsetHeight,
+            DEFAULT_STANDARD,
+            10 // Mobile padding
+          );
+          setScale(newScale);
+        }
+      };
+
+      updateScale();
+      window.addEventListener('resize', updateScale);
+      return () => window.removeEventListener('resize', updateScale);
+    }, []);
+
+    // Calculate stage dimensions based on logical size and current scale
+    const stageWidth = toCanvas(DEFAULT_STANDARD.dimensions.length, scale);
+    const stageHeight = toCanvas(DEFAULT_STANDARD.dimensions.width, scale);
 
     // --- Handler: Deselect on empty click ---
     const handleClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
@@ -53,28 +70,29 @@ export const MobileCanvas = forwardRef<Konva.Stage, MobileCanvasProps>(
     };
 
     return (
-      <div ref={containerRef} className="w-full h-full bg-slate-200">
+      <div ref={containerRef} className="w-full h-full bg-slate-200 flex items-center justify-center">
         <Stage
-          width={window.innerWidth}
-          height={window.innerHeight}
+          width={stageWidth}
+          height={stageHeight}
           draggable={false}
-          x={position.x}
-          y={position.y}
-          scaleX={scale}
-          scaleY={scale}
           ref={ref}
           onClick={handleClick}
           onTap={handleClick}
         >
           <Layer>
-            <FieldLayer />
-            <GhostLayer prevFrameItems={prevFrameItems} showGhosts={!isPlaying} />
+            <FieldLayer scale={scale} standard={DEFAULT_STANDARD} />
+            <GhostLayer 
+              prevFrameItems={prevFrameItems} 
+              showGhosts={!isPlaying} 
+              scale={scale}
+            />
             <ItemsLayer
               items={itemsRendered}
               selectedItemId={selectedItemId}
               isInteractive={!readOnly && !isPlaying && !isRecording}
               onDragEnd={onDragEnd}
               onSelect={onSelect}
+              scale={scale}
             />
           </Layer>
         </Stage>
