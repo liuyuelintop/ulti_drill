@@ -209,10 +209,11 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
         </button>
         <button
           onClick={() => setSettingsOpen(true)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
+          className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl px-2.5 text-[13px] font-semibold text-slate-300 active:bg-slate-800"
           aria-label="Play settings"
         >
-          <Icon name="note" size={18} />
+          <Icon name="sliders" size={18} />
+          <span className="hidden md:inline">Settings</span>
         </button>
         <Button
           variant="primary"
@@ -238,8 +239,31 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
           onSelect={setSelectedId}
           className="absolute inset-0"
         />
-        <div className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/45 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
-          Frame {frameIndex + 1} of {frames.length} · drag players to position
+        <div className="absolute left-3 top-3 flex flex-wrap items-center gap-2">
+          <span className="pointer-events-none rounded-lg bg-black/45 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur">
+            Frame {frameIndex + 1} of {frames.length}
+            {/* Kept short on phones so it clears the end zone label. */}
+            <span className="hidden sm:inline"> · drag players to position</span>
+          </span>
+          {/* Phones get these in the settings sheet instead, where there's room. */}
+          <div className="hidden items-center gap-2 sm:flex">
+            <FieldStepper
+              label="Offence"
+              dot="bg-red-500"
+              value={roster.offense}
+              min={1}
+              max={7}
+              onChange={(v) => setRoster(v, roster.defense)}
+            />
+            <FieldStepper
+              label="Defence"
+              dot="bg-blue-500"
+              value={roster.defense}
+              min={0}
+              max={7}
+              onChange={(v) => setRoster(roster.offense, v)}
+            />
+          </div>
         </div>
       </div>
 
@@ -316,6 +340,38 @@ interface SettingsSheetProps {
   onDelete: () => void;
   onClose: () => void;
 }
+
+/** Compact roster control shown over the field on wider screens. */
+const FieldStepper: React.FC<{
+  label: string;
+  dot: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+}> = ({ label, dot, value, min, max, onChange }) => (
+  <div className="flex items-center gap-1.5 rounded-lg bg-black/55 py-1 pl-2.5 pr-1 text-[11px] font-semibold text-white backdrop-blur">
+    <span className={`h-2 w-2 rounded-full ${dot}`} />
+    {label}
+    <button
+      onClick={() => onChange(Math.max(min, value - 1))}
+      disabled={value <= min}
+      aria-label={`One fewer ${label} player`}
+      className="ml-1 h-6 w-6 rounded bg-white/10 text-sm leading-none hover:bg-white/20 disabled:opacity-25"
+    >
+      −
+    </button>
+    <span className="w-4 text-center font-mono text-xs">{value}</span>
+    <button
+      onClick={() => onChange(Math.min(max, value + 1))}
+      disabled={value >= max}
+      aria-label={`One more ${label} player`}
+      className="h-6 w-6 rounded bg-white/10 text-sm leading-none hover:bg-white/20 disabled:opacity-25"
+    >
+      +
+    </button>
+  </div>
+);
 
 const Stepper: React.FC<{
   label: string;
