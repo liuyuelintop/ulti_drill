@@ -1,247 +1,29 @@
-import { useRef, useEffect } from "react";
-import Konva from "konva";
-import {
-  useAnimation,
-  useVideoExport,
-  useFileHandler,
-  usePlaybookState,
-} from "../features/playbook";
-import { useIsMobile } from "../shared/hooks/useIsMobile";
-import { DesktopLayout } from "./layouts/DesktopLayout";
-import { MobileLayout } from "./layouts/MobileLayout";
-import { toLogical } from "../features/playbook/utils/coordinates";
-import { DEFAULT_STANDARD } from "../features/playbook/constants/standards";
+import React from "react";
+import { PlaybookProvider } from "../data/playbookStore";
+import { useHashRoute } from "../lib/useHashRoute";
+import { LibraryScreen } from "../screens/LibraryScreen";
+import { ViewerScreen } from "../screens/ViewerScreen";
+import { EditorScreen } from "../screens/EditorScreen";
 
-const App = () => {
-  // --- RESPONSIVE CHECK ---
-  const isMobile = useIsMobile();
+const Routes: React.FC = () => {
+  const route = useHashRoute();
 
-  // --- REFS ---
-  const stageRef = useRef<Konva.Stage>(null);
-
-  // --- CUSTOM HOOKS ---
-  const {
-    frames,
-    setFrames,
-    currentFrameIndex,
-    setCurrentFrameIndex,
-    setEditingFrame,
-    selectedItemId,
-    itemsToRender,
-    prevFrameItems,
-    isDirty,
-    updateEditingFrame,
-    updateTeamConfig,
-    saveChanges,
-    discardChanges,
-    addFrame,
-    duplicateFrame,
-    deleteFrame,
-    clearAllFrames,
-    selectItem,
-    resetToPrevious,
-  } = usePlaybookState();
-
-  const {
-    animatingItems,
-    isPlaying,
-    setIsPlaying,
-    togglePlay,
-  } = useAnimation({
-    frames,
-    setCurrentFrameIndex,
-  });
-
-  const {
-    isRecording,
-    isExporting,
-    handleExportVideo,
-  } = useVideoExport({
-    isDirty,
-    isPlaying,
-    setIsPlaying,
-    setCurrentFrameIndex,
-    stageRef,
-  });
-
-  const {
-    fileInputRef,
-    savePlay,
-    loadPlay,
-    loadPlaybookData,
-    triggerLoadPlay,
-  } = useFileHandler({
-    frames,
-    setFrames,
-    setCurrentFrameIndex,
-    setEditingFrame,
-    isDirty,
-  });
-
-  // --- INTERACTION STATE ---
-  const interactionState = {
-    isEditable: !isPlaying && !isRecording && !isExporting,
-  };
-
-  // --- DERIVED STATE ---
-  const offenseCount = itemsToRender.filter((i) => i.type === "offense").length;
-  const defenseCount = itemsToRender.filter((i) => i.type === "defense").length;
-
-  // --- HANDLERS ---
-  const handleAddFrame = () => {
-    if (isDirty) {
-      alert("Please save or discard changes before adding a new frame.");
-      return;
-    }
-    addFrame();
-  };
-
-  const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>, id: string) => {
-    if (!interactionState.isEditable) return;
-    
-    const stage = e.target.getStage();
-    if (!stage) return;
-
-    // Calculate current scale from stage dimensions
-    // scale = pixelWidth / logicalWidth
-    const scale = stage.width() / DEFAULT_STANDARD.dimensions.length;
-
-    // Convert pixel coordinates back to logical units (Yards)
-    const logicalX = toLogical(e.target.x(), scale);
-    const logicalY = toLogical(e.target.y(), scale);
-
-    updateEditingFrame(id, logicalX, logicalY);
-  };
-
-  const handleClearAllFrames = () => {
-    if (isDirty) {
-      const confirm = window.confirm(
-        "Discard unsaved changes before clearing all frames?"
-      );
-      if (!confirm) return;
-    }
-    const confirmClear = window.confirm(
-      "Are you sure you want to clear ALL frames?"
-    );
-    if (!confirmClear) return;
-
-    clearAllFrames();
-    setIsPlaying(false);
-  };
-
-  const ensureCleanAnd = (action: () => void) => {
-    if (isDirty) {
-      const confirm = window.confirm("Discard unsaved changes?");
-      if (!confirm) return;
-      setEditingFrame(null);
-    }
-    action();
-  };
-
-  const handleDeleteFrame = () => {
-    const confirmDelete = window.confirm(
-      "Delete current frame? This cannot be undone."
-    );
-    if (!confirmDelete) return;
-    deleteFrame();
-  };
-
-  const handleSelectFrame = (idx: number) => {
-    if (isRecording || isExporting) return;
-    ensureCleanAnd(() => {
-      setCurrentFrameIndex(idx);
-      if (isPlaying) togglePlay();
-    });
-  };
-
-  const handleNextFrame = () => {
-    if (isRecording || isExporting || isPlaying) return;
-    ensureCleanAnd(() =>
-      setCurrentFrameIndex((prev) => Math.min(prev + 1, frames.length - 1))
-    );
-  };
-
-  const handlePrevFrame = () => {
-    if (isRecording || isExporting || isPlaying) return;
-    ensureCleanAnd(() =>
-      setCurrentFrameIndex((prev) => Math.max(prev - 1, 0))
-    );
-  };
-
-  // --- KEYBOARD SHORTCUTS ---
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && selectedItemId) {
-        selectItem(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedItemId, selectItem]);
-
-  // --- PROPS BUNDLING ---
-  const desktopLayoutProps = {
-    // State
-    frames,
-    currentFrameIndex,
-    isDirty,
-    isPlaying,
-    isRecording,
-    isExporting,
-    selectedItemId,
-    itemsToRender,
-    prevFrameItems,
-    animatingItems,
-    offenseCount,
-    defenseCount,
-
-    // Refs
-    stageRef,
-    fileInputRef,
-
-    // Handlers
-    onLoadPlay: loadPlay,
-    onLoadPreset: loadPlaybookData,
-    onTriggerLoadPlay: triggerLoadPlay,
-    onSavePlay: savePlay,
-    onExportVideo: handleExportVideo,
-    onSaveChanges: saveChanges,
-    onDiscardChanges: discardChanges,
-    onDragEnd: handleDragEnd,
-    onSelect: selectItem,
-    onResetItem: resetToPrevious,
-    onAddFrame: handleAddFrame,
-    onDuplicateFrame: duplicateFrame,
-    onDeleteFrame: handleDeleteFrame,
-    onClearAllFrames: handleClearAllFrames,
-    onSelectFrame: handleSelectFrame,
-    onNextFrame: handleNextFrame,
-    onPrevFrame: handlePrevFrame,
-    onTogglePlay: togglePlay,
-    onUpdateTeamConfig: updateTeamConfig,
-  };
-
-  const mobileLayoutProps = {
-    currentFrameIndex,
-    frames,
-    isPlaying,
-    itemsToRender,
-    animatingItems,
-    prevFrameItems,
-    stageRef,
-    onTogglePlay: togglePlay,
-    onSelectFrame: handleSelectFrame,
-    onLoadPreset: loadPlaybookData,
-    onLoadPlay: loadPlay,
-    onTriggerLoadPlay: triggerLoadPlay,
-  };
-
-  // --- RENDER ---
-  return isMobile ? (
-    <MobileLayout {...mobileLayoutProps} />
-  ) : (
-    <DesktopLayout {...desktopLayoutProps} />
-  );
+  switch (route.name) {
+    case "view":
+      return <ViewerScreen key={route.id} id={route.id} />;
+    case "edit":
+      return <EditorScreen key={route.id} id={route.id} />;
+    case "new":
+      return <EditorScreen key="new" id={null} />;
+    default:
+      return <LibraryScreen />;
+  }
 };
+
+const App: React.FC = () => (
+  <PlaybookProvider>
+    <Routes />
+  </PlaybookProvider>
+);
 
 export default App;

@@ -1,159 +1,71 @@
-# Ultimate Playbook (Tactical Animator) 🥏
+# 战术库 · Ultimate Playbook 🥏
 
-A modern, web-based tactical animator for Ultimate Frisbee. Design complex offensive and defensive plays on your desktop, then take them to the field with the mobile tactical player.
+队内飞盘战术库。手机上看战术动画，随手改，队友实时同步。
 
-## 🌟 Overview
+线上地址：https://ulti-drill.vercel.app/
 
-Ultimate Playbook allows coaches and captains to visualize strategies using a frame-based animation system. Unlike static whiteboards, it interpolates movement between frames to show exactly *how* a play develops.
+## 能干什么
 
-The application features a **Responsive Dual-Mode Design**:
-*   **Desktop:** A full-featured **Tactical Editor** for creating, editing, and exporting plays.
-*   **Mobile:** A streamlined **Tactical Player** optimized for handheld viewing and playback on the sideline.
+- **战术库**：按「战术 / 站位 / 训练 Drill」分类，支持搜索名称、标签、说明。卡片带缩略图，扫一眼就知道是哪套。
+- **看战术**（手机优先）：竖屏自动把球场旋转成进攻朝上、铺满屏幕；自动聚焦到战术实际用到的区域；逐帧播放带跑动轨迹箭头；每帧可写要点笔记。
+- **改战术**：手机和电脑都能拖球员摆位。加帧、删帧、调上场人数（会同步应用到所有帧）、写说明和标签。
+- **云端同步**：所有人打开同一个网址就是同一个战术库。连不上云端时自动降级到本机存储，场边没信号照样能看能改，联网后刷新同步。
 
-## ✨ Key Features
+## 首次部署：建一张表
 
-### 🖥️ Desktop Editor (Creator Tool)
-*   **Frame-based Animation:** Create keyframes; the app smooths the movement between them.
-*   **Dynamic Team Configuration:** 
-    *   Adjust Offense (1-7 players) and Defense (0-7 players) dynamically.
-    *   **Smart Defense:** Adding defenders automatically positions them relative to offense players based on the formation (Vertical vs. Horizontal stack).
-*   **Premium Canvas:** Realistic stadium field with endzones, brick marks, and distinct player/disc rendering.
-*   **Play Management:**
-    *   **Save/Load:** Export plays as `.json` files to share with teammates.
-    *   **Presets:** Built-in standard formations (Vert Stack, Ho Stack) and example plays (Facial).
-    *   **Video Export:** Record your play and download it as an `.mp4` video.
-*   **Timeline Control:** Drag-and-drop editing, frame duplication, and precise timeline navigation.
+云端用 Supabase。第一次需要在 Supabase 控制台 → **SQL Editor** 里跑一次
+[`docs-supabase-setup.sql`](./docs-supabase-setup.sql)（App 里的提示条也能一键复制这段 SQL）。
 
-### 📱 Mobile Tactical Player (Viewer)
-*   **Playback-First Experience:** Friction-free interface designed for quick access on the field.
-*   **Read-Only Mode:** Prevents accidental edits while scrolling or viewing.
-*   **Portable Library:** Load built-in presets or import `.json` plays directly from your phone.
-*   **Adaptive Layout:** Works seamlessly in both Portrait and Landscape orientations.
+建表前 App 不会报错，只会提示「云端还没建表」并退回本机存储。
 
-## 🛠️ Tech Stack
+> 注意：RLS 策略是全开的 —— 拿到网址的人都能读写战术库。队内用没问题，别把链接发到公开渠道。
 
-*   **Framework:** React 19
-*   **Build Tool:** Vite
-*   **Language:** TypeScript
-*   **Styling:** Tailwind CSS v4 (custom Design Tokens)
-*   **Graphics:** Konva (via `react-konva`) for high-performance canvas rendering.
-*   **State Management:** Custom hooks (`usePlaybookState`) with immutable state patterns.
+## 本地开发
 
-## 🚀 Getting Started
+```bash
+pnpm install
+pnpm dev        # http://localhost:5173
+pnpm build      # 类型检查 + 打包
+pnpm lint
+```
 
-### Prerequisites
-*   Node.js (Latest LTS recommended)
-*   pnpm (Preferred package manager)
+Supabase 的地址和 anon key 已经写在 `src/lib/supabase.ts` 里作为默认值（anon key 本来就是公开的浏览器端凭据，安全边界靠 RLS）。
+要指向别的 Supabase 项目，复制 `.env.example` 成 `.env` 覆盖即可。
 
-### Installation
+## 技术栈
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/your-username/ultimate-playbook.git
-    cd ultimate-playbook
-    ```
+React 19 · TypeScript · Vite · Tailwind v4 · Konva（canvas 渲染）· Supabase REST（直接 fetch，无 SDK）
 
-2.  Install dependencies:
-    ```bash
-    pnpm install
-    ```
-
-3.  Start the development server:
-    ```bash
-    pnpm run dev
-    ```
-
-4.  Open `http://localhost:5173` in your browser.
-
-## 📖 Usage Guide
-
-### Creating a Play (Desktop)
-1.  **Setup:** Use the **Team Config** in the header to set the number of players.
-2.  **Positioning:** Drag players (Red = Offense, Blue = Defense) and the Disc to their starting positions.
-3.  **Next Frame:** Click `+ Add` in the timeline to create the next step. Move players to where they run *to*.
-4.  **Animation:** Press **Play** (Spacebar) to see them move.
-5.  **Save:** Click **Download Play** to save the `.json` file.
-
-### Viewing a Play (Mobile)
-1.  Open the app on your phone.
-2.  Tap the **Menu** button (top left) or **Load Tactics**.
-3.  Select a **Preset** (e.g., Vertical Stack) or **Import** a file you received.
-4.  Use the timeline slider or Play button to watch the action.
-
-## 📂 Project Structure
+## 代码结构
 
 ```text
 src/
-├── app/
-│   ├── App.tsx                 # Main entry & Logic/Layout splitter
-│   └── layouts/                # DesktopLayout vs MobileLayout
+├── data/            # Play 数据模型、云端/本地仓储、全局 store
+├── lib/             # Supabase REST 客户端、hash 路由、屏幕方向
 ├── features/
-│   └── playbook/
-│       ├── components/         # UI & Canvas components (Field, Players)
-│       ├── hooks/              # Core logic (Animation, File Handling, State)
-│       └── utils/              # Math helpers (Viewport, Formation logic)
-├── presets/
-│   ├── formations/             # Static setups (Vert/Ho Stack)
-│   └── plays/                  # Full animated scenarios
-└── shared/
-    ├── design/                 # Design tokens (Colors, Typography)
-    └── hooks/                  # Utility hooks (useIsMobile, useOrientation)
+│   ├── field/       # 球场画布：缩放旋转、球员、轨迹、播放
+│   └── playbook/    # 场地标准、坐标换算、阵型/人数工具
+├── screens/         # 战术库 / 播放器 / 编辑器
+└── components/      # 通用 UI
 ```
 
-## 🔧 Advanced: JSON Data & Coordinate System
+## 坐标系
 
-Advanced users can create plays programmatically by generating JSON files. Here is the specification for the coordinate system and data structure.
+场地标准默认 WFDF：**100m × 37m**，得分区深 18m，brick 点距底线 18m。
+战术数据里的 `x` / `y` 一律是**米**，原点在左侧得分区外角，与屏幕像素无关 —— 任何屏幕尺寸下都按比例还原。
 
-### 1. The Field Grid (Projection Rule)
-The application uses a pixel-based coordinate system mapped to standard Ultimate field dimensions.
+一套战术的数据长这样：
 
-*   **Scale Factor:** `8 pixels = 1 yard`
-*   **Origin (0, 0):** Top-Left corner of the left endzone.
-*   **Canvas Dimensions:** `880px` (Length) × `320px` (Width)
-
-#### Key Reference Coordinates (X, Y)
-| Landmark | X (px) | Y (px) | Notes |
-| :--- | :--- | :--- | :--- |
-| **Back Left Endzone** | `0` | `0 - 320` | Far left edge |
-| **Left Goal Line** | `160` | `0 - 320` | Start of playing field (20 yards in) |
-| **Brick Mark (Left)** | `304` | `160` | 18 yards from goal line, centered |
-| **Midfield** | `440` | `160` | Dead center of the field |
-| **Right Goal Line** | `720` | `0 - 320` | End of playing field |
-| **Back Right Endzone** | `880` | `0 - 320` | Far right edge |
-
-### 2. Data Structure (`PlaybookData`)
-
-A valid play file must follow this JSON schema:
-
-```json
+```jsonc
 {
-  "version": "1.0",
-  "name": "My Custom Play",
-  "description": "Optional description...",
+  "name": "Facial",
+  "category": "play",
+  "description": "起手战术…",
+  "tags": ["起手", "长传"],
   "frames": [
-    // Frame 1 (Start)
-    [
-      { "id": "disc", "type": "disc", "x": 304, "y": 160, "label": "" },
-      { "id": "offense-1", "type": "offense", "x": 304, "y": 160, "label": "1" },
-      { "id": "defense-1", "type": "defense", "x": 324, "y": 180, "label": "1" }
-    ],
-    // Frame 2 (Movement)
-    [
-      { "id": "disc", "type": "disc", "x": 440, "y": 50, "label": "" },
-      ...
-    ]
-  ]
+    [ { "id": "disc", "type": "disc", "x": 31.9, "y": 19.1, "label": "" },
+      { "id": "offense-1", "type": "offense", "x": 30, "y": 18.5, "label": "1" } ]
+  ],
+  "frame_notes": ["1 号持盘，2 号在身后接应"]
 }
 ```
-
-*   **`id`**: Unique identifier. Use `offense-N`, `defense-N`, or `disc`.
-*   **`type`**: Must be `"offense"`, `"defense"`, or `"disc"`.
-*   **`label`**: The text displayed on the player token (e.g., jersey number).
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is open source.

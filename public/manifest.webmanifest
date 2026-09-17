@@ -1,0 +1,11 @@
+{
+  "name": "战术库 · Ultimate Playbook",
+  "short_name": "战术库",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    { "src": "/disc.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
