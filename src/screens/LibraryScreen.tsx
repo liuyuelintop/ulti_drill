@@ -11,10 +11,10 @@ import { SetupBanner } from "../components/SetupBanner";
 type Filter = "all" | PlayCategory;
 
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: "all", label: "全部" },
-  { key: "play", label: "战术" },
-  { key: "formation", label: "站位" },
-  { key: "drill", label: "训练" },
+  { key: "all", label: "All" },
+  { key: "play", label: "Plays" },
+  { key: "formation", label: "Formations" },
+  { key: "drill", label: "Drills" },
 ];
 
 const CATEGORY_STYLES: Record<PlayCategory, string> = {
@@ -27,13 +27,16 @@ const timeAgo = (iso: string) => {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.round(diff / 60000);
   if (Number.isNaN(mins)) return "";
-  if (mins < 1) return "刚刚";
-  if (mins < 60) return `${mins} 分钟前`;
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours} 小时前`;
+  if (hours < 24) return `${hours}h ago`;
   const days = Math.round(hours / 24);
-  if (days < 30) return `${days} 天前`;
-  return new Date(iso).toLocaleDateString("zh-CN");
+  if (days < 30) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString("en-AU", {
+    day: "numeric",
+    month: "short",
+  });
 };
 
 const PlayCard: React.FC<{ play: Play }> = ({ play }) => (
@@ -45,7 +48,7 @@ const PlayCard: React.FC<{ play: Play }> = ({ play }) => (
       <PlayThumb frames={play.frames} className="h-full w-full" />
       <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-900 to-transparent" />
       <span className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
-        {play.frames.length} 帧
+        {play.frames.length} {play.frames.length === 1 ? "frame" : "frames"}
       </span>
     </div>
 
@@ -107,16 +110,18 @@ export const LibraryScreen: React.FC = () => {
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex-1">
             <h1 className="text-xl font-extrabold tracking-tight text-white">
-              战术库
+              Playbook
             </h1>
             <p className="text-xs text-slate-500">
-              {loading ? "加载中…" : `${plays.length} 套战术`}
+              {loading
+                ? "Loading…"
+                : `${plays.length} ${plays.length === 1 ? "play" : "plays"}`}
             </p>
           </div>
 
           <button
             onClick={() => void refresh()}
-            title="刷新"
+            title="Refresh"
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-800 text-slate-400 active:bg-slate-800"
           >
             <Icon name="refresh" size={18} />
@@ -131,17 +136,17 @@ export const LibraryScreen: React.FC = () => {
           >
             <Icon name={source === "cloud" ? "cloud" : "cloudOff"} size={15} />
             <span className="hidden sm:inline">
-              {source === "cloud" ? "云端同步" : "本机"}
+              {source === "cloud" ? "Synced" : "Offline"}
             </span>
           </span>
 
           <Button
             variant="primary"
-            aria-label="新建战术"
+            aria-label="New play"
             onClick={() => navigate("#/new")}
           >
             <Icon name="plus" size={18} />
-            <span className="hidden sm:inline">新建</span>
+            <span className="hidden sm:inline">New</span>
           </Button>
         </div>
 
@@ -155,7 +160,7 @@ export const LibraryScreen: React.FC = () => {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="搜索战术名 / 标签 / 说明"
+              placeholder="Search plays, tags or notes"
               className="h-11 w-full rounded-xl border border-slate-800 bg-slate-900 pl-9 pr-9 text-sm text-slate-100 placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
             />
             {query && (
@@ -204,21 +209,21 @@ export const LibraryScreen: React.FC = () => {
         ) : visible.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-800 px-6 py-14 text-center">
             <p className="text-base font-semibold text-slate-300">
-              {plays.length === 0 ? "战术库还是空的" : "没有匹配的战术"}
+              {plays.length === 0 ? "Your playbook is empty" : "No plays match"}
             </p>
             <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate-500">
               {plays.length === 0
-                ? "先导入几套内置站位和战术打底，再在上面改成你们队自己的。"
-                : "换个关键词或切换分类试试。"}
+                ? "Load the starter formations and plays, then edit them into your team's own."
+                : "Try a different keyword or category."}
             </p>
             {plays.length === 0 && (
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 <Button variant="primary" onClick={() => void seed()}>
-                  导入内置战术
+                  Load starter plays
                 </Button>
                 <Button onClick={() => navigate("#/new")}>
                   <Icon name="plus" size={18} />
-                  从零新建
+                  Start from scratch
                 </Button>
               </div>
             )}
@@ -234,7 +239,7 @@ export const LibraryScreen: React.FC = () => {
 
       {author && (
         <p className="pb-6 text-center text-xs text-slate-600">
-          当前身份：{author} · 保存战术时会署名
+          Signed in as {author} — your name is saved with every play you edit
         </p>
       )}
     </div>

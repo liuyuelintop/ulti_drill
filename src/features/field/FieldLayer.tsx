@@ -77,22 +77,29 @@ export const FieldLayer: React.FC<FieldLayerProps> = ({
       <Rect x={0} y={0} width={L} height={W} stroke={T.line} strokeWidth={2.5} />
 
       {/* End zone labels, kept upright regardless of field rotation */}
-      {[EZ / 2, L - EZ / 2].map((cx, i) => (
-        <Text
-          key={`ez-${i}`}
-          x={cx}
-          y={W / 2}
-          text="得分区"
-          fontSize={Math.max(11, scale * 1.6)}
-          fontFamily="Outfit, system-ui, sans-serif"
-          fontStyle="bold"
-          fill={T.text}
-          rotation={textRotation}
-          offsetX={Math.max(11, scale * 1.6) * 1.5}
-          offsetY={Math.max(11, scale * 1.6) / 2}
-          listening={false}
-        />
-      ))}
+      {[EZ / 2, L - EZ / 2].map((cx, i) => {
+        const size = Math.max(10, scale * 1.4);
+        const boxW = size * 10;
+        return (
+          <Text
+            key={`ez-${i}`}
+            x={cx}
+            y={W / 2}
+            text="END ZONE"
+            fontSize={size}
+            fontFamily="Outfit, system-ui, sans-serif"
+            fontStyle="bold"
+            letterSpacing={size * 0.12}
+            fill={T.text}
+            align="center"
+            width={boxW}
+            offsetX={boxW / 2}
+            offsetY={size / 2}
+            rotation={textRotation}
+            listening={false}
+          />
+        );
+      })}
 
     </>
   );

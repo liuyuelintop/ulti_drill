@@ -145,13 +145,19 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
   };
 
   const handleBack = () => {
-    if (dirty && !window.confirm("有未保存的改动，确定离开吗？")) return;
+    if (dirty && !window.confirm("You have unsaved changes. Leave anyway?"))
+      return;
     navigate(id ? `#/p/${id}` : "#/");
   };
 
   const handleDelete = async () => {
     if (!draft || !id) return;
-    if (!window.confirm(`删除「${draft.name}」？队友那边也会消失，且无法撤销。`)) return;
+    if (
+      !window.confirm(
+        `Delete "${draft.name}"? It disappears for your teammates too, and this can't be undone.`
+      )
+    )
+      return;
     await remove(id);
     navigate("#/");
   };
@@ -167,7 +173,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
   if (!draft) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-slate-950 text-slate-400">
-        {loading ? "加载中…" : "找不到这套战术"}
+        {loading ? "Loading…" : "That play doesn't exist"}
       </div>
     );
   }
@@ -179,7 +185,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
         <button
           onClick={handleBack}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
-          aria-label="返回"
+          aria-label="Back"
         >
           <Icon name="back" />
         </button>
@@ -187,7 +193,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
         <input
           value={draft.name}
           onChange={(e) => patch({ name: e.target.value })}
-          placeholder="给战术起个名字"
+          placeholder="Name this play"
           maxLength={40}
           className="h-10 min-w-0 flex-1 rounded-xl border border-transparent bg-slate-900 px-3 text-[15px] font-bold text-white placeholder:font-normal placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
         />
@@ -197,25 +203,25 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
             setOrientation(orientation === "vertical" ? "horizontal" : "vertical")
           }
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
-          aria-label="旋转球场"
+          aria-label="Rotate field"
         >
           <Icon name="rotate" size={18} />
         </button>
         <button
           onClick={() => setSettingsOpen(true)}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
-          aria-label="战术设置"
+          aria-label="Play settings"
         >
           <Icon name="note" size={18} />
         </button>
         <Button
           variant="primary"
-          aria-label="保存"
+          aria-label="Save"
           onClick={handleSave}
           disabled={saving}
         >
           <Icon name="check" size={18} />
-          <span className="hidden sm:inline">{saving ? "保存中" : "保存"}</span>
+          <span className="hidden sm:inline">{saving ? "Saving…" : "Save"}</span>
         </Button>
       </header>
 
@@ -233,7 +239,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
           className="absolute inset-0"
         />
         <div className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/45 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
-          第 {frameIndex + 1} / {frames.length} 帧 · 拖动球员摆位
+          Frame {frameIndex + 1} of {frames.length} · drag players to position
         </div>
       </div>
 
@@ -242,7 +248,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
         <input
           value={draft.frame_notes[frameIndex] ?? ""}
           onChange={(e) => setNote(e.target.value)}
-          placeholder={`第 ${frameIndex + 1} 帧要点，比如「2 号假切内线再跑深」`}
+          placeholder={`Note for frame ${frameIndex + 1}, e.g. "2 fakes the in-cut then goes deep"`}
           className="h-10 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 text-[13px] text-slate-200 placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
         />
       </div>
@@ -269,7 +275,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
               className="flex h-10 shrink-0 items-center gap-1 rounded-lg border border-dashed border-slate-700 px-2.5 text-[13px] font-bold text-sky-400 active:bg-slate-800"
             >
               <Icon name="plus" size={16} />
-              加一帧
+              Add frame
             </button>
           </div>
 
@@ -277,7 +283,7 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
             onClick={deleteFrame}
             disabled={frames.length <= 1}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 active:bg-slate-800 disabled:opacity-30"
-            aria-label="删除当前帧"
+            aria-label="Delete this frame"
           >
             <Icon name="trash" size={17} />
           </button>
@@ -359,9 +365,10 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({
     />
     <div className="relative max-h-[85dvh] w-full overflow-y-auto rounded-t-3xl border-t border-slate-800 bg-slate-950 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:max-w-md sm:rounded-3xl sm:border">
       <div className="mb-4 flex items-center">
-        <h2 className="flex-1 text-lg font-bold text-white">战术设置</h2>
+        <h2 className="flex-1 text-lg font-bold text-white">Play settings</h2>
         <button
           onClick={onClose}
+          aria-label="Close settings"
           className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 active:bg-slate-800"
         >
           <Icon name="close" size={18} />
@@ -369,7 +376,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({
       </div>
 
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-        分类
+        Category
       </label>
       <div className="mb-4 flex gap-2">
         {CATEGORIES.map((c) => (
@@ -388,18 +395,18 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({
       </div>
 
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-        战术说明
+        Description
       </label>
       <textarea
         value={draft.description}
         onChange={(e) => onPatch({ description: e.target.value })}
         rows={4}
-        placeholder="什么时候用、关键点是什么、常见失误…"
+        placeholder="When to call it, what makes it work, common mistakes…"
         className="mb-4 w-full resize-none rounded-xl border border-slate-800 bg-slate-900 p-3 text-[13px] leading-relaxed text-slate-200 placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
       />
 
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-        标签（逗号分隔）
+        Tags (comma separated)
       </label>
       <input
         value={draft.tags.join(", ")}
@@ -411,23 +418,26 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({
               .filter(Boolean),
           })
         }
-        placeholder="起手, 长传, 打 zone"
+        placeholder="pull play, huck, vs zone"
         className="mb-4 h-11 w-full rounded-xl border border-slate-800 bg-slate-900 px-3 text-[13px] text-slate-200 placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
       />
 
-      <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-        上场人数（会应用到所有帧）
+      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+        Players on field
       </label>
+      <p className="mb-1.5 text-[11px] text-slate-600">
+        Applies to every frame in this play.
+      </p>
       <div className="mb-4 space-y-2">
         <Stepper
-          label="进攻（红）"
+          label="Offence (red)"
           value={roster.offense}
           min={1}
           max={7}
           onChange={(v) => onRoster(v, roster.defense)}
         />
         <Stepper
-          label="防守（蓝）"
+          label="Defence (blue)"
           value={roster.defense}
           min={0}
           max={7}
@@ -438,7 +448,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({
       {canDelete && (
         <Button variant="danger" size="lg" className="w-full" onClick={onDelete}>
           <Icon name="trash" size={17} />
-          删除这套战术
+          Delete this play
         </Button>
       )}
     </div>

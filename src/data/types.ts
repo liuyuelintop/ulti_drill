@@ -3,9 +3,9 @@ import type { DraggableItem } from "../features/playbook/types";
 export type PlayCategory = "play" | "formation" | "drill";
 
 export const CATEGORY_LABELS: Record<PlayCategory, string> = {
-  play: "战术",
-  formation: "站位",
-  drill: "训练 Drill",
+  play: "Play",
+  formation: "Formation",
+  drill: "Drill",
 };
 
 /** One tactic in the team playbook. Column names match the Supabase table. */
@@ -46,7 +46,7 @@ export const normalizePlay = (raw: Partial<Play> & { id?: string }): Play => {
   const notes = Array.isArray(raw.frame_notes) ? raw.frame_notes : [];
   return {
     id: raw.id ?? crypto.randomUUID(),
-    name: raw.name?.trim() || "未命名战术",
+    name: raw.name?.trim() || "Untitled play",
     category: (["play", "formation", "drill"] as const).includes(
       raw.category as PlayCategory
     )

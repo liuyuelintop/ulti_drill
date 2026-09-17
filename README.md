@@ -1,71 +1,86 @@
-# 战术库 · Ultimate Playbook 🥏
+# Ultimate Playbook 🥏
 
-队内飞盘战术库。手机上看战术动画，随手改，队友实时同步。
+Your team's ultimate frisbee playbook. Watch plays animate on your phone,
+edit them anywhere, everyone stays in sync.
 
-线上地址：https://ulti-drill.vercel.app/
+Live: https://ulti-drill.vercel.app/
 
-## 能干什么
+## What it does
 
-- **战术库**：按「战术 / 站位 / 训练 Drill」分类，支持搜索名称、标签、说明。卡片带缩略图，扫一眼就知道是哪套。
-- **看战术**（手机优先）：竖屏自动把球场旋转成进攻朝上、铺满屏幕；自动聚焦到战术实际用到的区域；逐帧播放带跑动轨迹箭头；每帧可写要点笔记。
-- **改战术**：手机和电脑都能拖球员摆位。加帧、删帧、调上场人数（会同步应用到所有帧）、写说明和标签。
-- **云端同步**：所有人打开同一个网址就是同一个战术库。连不上云端时自动降级到本机存储，场边没信号照样能看能改，联网后刷新同步。
+- **Playbook** — plays, formations and drills in one library, searchable by name,
+  tag or description. Every card carries a thumbnail so you can spot a play at a glance.
+- **Watch a play** (phone-first) — in portrait the field rotates so the attack runs
+  up the screen and fills it, then zooms to the slice of field the play actually uses.
+  Step through frames or hit play; dashed arrows show who moved where.
+- **Edit a play** — drag players on phone or laptop. Add and delete frames, change how
+  many players are on the field (applies across every frame), write a description and tags.
+- **Cloud sync** — everyone opening the same URL sees the same playbook. If the cloud is
+  unreachable it falls back to local storage, so the sideline still works without signal,
+  and syncs again on refresh.
 
-## 首次部署：建一张表
+## First-time setup: create the table
 
-云端用 Supabase。第一次需要在 Supabase 控制台 → **SQL Editor** 里跑一次
-[`docs-supabase-setup.sql`](./docs-supabase-setup.sql)（App 里的提示条也能一键复制这段 SQL）。
+Cloud storage is Supabase. Run [`docs-supabase-setup.sql`](./docs-supabase-setup.sql)
+once in your Supabase dashboard → **SQL Editor**. The app also shows a banner with a
+one-click copy of that SQL.
 
-建表前 App 不会报错，只会提示「云端还没建表」并退回本机存储。
+Before the table exists the app doesn't break — it says so and falls back to local storage.
 
-> 注意：RLS 策略是全开的 —— 拿到网址的人都能读写战术库。队内用没问题，别把链接发到公开渠道。
+> The RLS policies are wide open: anyone with the URL can read and write the playbook.
+> Fine for a squad, but don't post the link publicly.
 
-## 本地开发
+## Local development
 
 ```bash
 pnpm install
 pnpm dev        # http://localhost:5173
-pnpm build      # 类型检查 + 打包
+pnpm build      # typecheck + bundle
 pnpm lint
 ```
 
-Supabase 的地址和 anon key 已经写在 `src/lib/supabase.ts` 里作为默认值（anon key 本来就是公开的浏览器端凭据，安全边界靠 RLS）。
-要指向别的 Supabase 项目，复制 `.env.example` 成 `.env` 覆盖即可。
+The Supabase URL and anon key are baked into `src/lib/supabase.ts` as defaults (the anon
+key is a public browser-side credential; RLS is the real boundary). To point at a
+different Supabase project, copy `.env.example` to `.env` and override them.
 
-## 技术栈
+## Stack
 
-React 19 · TypeScript · Vite · Tailwind v4 · Konva（canvas 渲染）· Supabase REST（直接 fetch，无 SDK）
+React 19 · TypeScript · Vite · Tailwind v4 · Konva (canvas) · Supabase REST (plain fetch, no SDK)
 
-## 代码结构
+## Layout
 
 ```text
 src/
-├── data/            # Play 数据模型、云端/本地仓储、全局 store
-├── lib/             # Supabase REST 客户端、hash 路由、屏幕方向
+├── data/            # Play model, cloud/local repository, global store
+├── lib/             # Supabase REST client, hash router, screen orientation
 ├── features/
-│   ├── field/       # 球场画布：缩放旋转、球员、轨迹、播放
-│   └── playbook/    # 场地标准、坐标换算、阵型/人数工具
-├── screens/         # 战术库 / 播放器 / 编辑器
-└── components/      # 通用 UI
+│   ├── field/       # Field canvas: scaling, rotation, players, trails, playback
+│   └── playbook/    # Field standards, coordinate maths, formation/roster helpers
+├── screens/         # Library / Viewer / Editor
+└── components/      # Shared UI
 ```
 
-## 坐标系
+## Coordinate system
 
-场地标准默认 WFDF：**100m × 37m**，得分区深 18m，brick 点距底线 18m。
-战术数据里的 `x` / `y` 一律是**米**，原点在左侧得分区外角，与屏幕像素无关 —— 任何屏幕尺寸下都按比例还原。
+The field standard is WFDF by default: **100 m × 37 m**, 18 m end zones, brick mark 18 m
+from the goal line. Every `x` / `y` in a play is in **metres**, with the origin at the
+outer corner of the left end zone — independent of screen pixels, so a play renders
+proportionally at any size.
 
-一套战术的数据长这样：
+A play looks like this:
 
 ```jsonc
 {
   "name": "Facial",
   "category": "play",
-  "description": "起手战术…",
-  "tags": ["起手", "长传"],
+  "description": "Pull play…",
+  "tags": ["pull play", "huck"],
   "frames": [
     [ { "id": "disc", "type": "disc", "x": 31.9, "y": 19.1, "label": "" },
       { "id": "offense-1", "type": "offense", "x": 30, "y": 18.5, "label": "1" } ]
   ],
-  "frame_notes": ["1 号持盘，2 号在身后接应"]
+  "frame_notes": ["1 has the disc, 2 sets up behind as the dump"]
 }
 ```
+
+Item `type` is `offense`, `defense` or `disc` — those are the stored data values and stay
+as-is; the UI labels them Offence and Defence.

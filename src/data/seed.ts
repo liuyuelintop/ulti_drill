@@ -18,28 +18,32 @@ const SEEDS: SeedSpec[] = [
   {
     data: verticalStack as PlaybookData,
     category: "formation",
-    name: "竖线站位 Vert Stack",
+    name: "Vert Stack",
     description:
-      "最基础的进攻站位。五名 cutter 在中间排成一条竖线，两侧留出大片空间给 in-cut 和 deep。新队员先把这个站住。",
-    tags: ["基础", "进攻站位"],
-    notes: ["1 号持盘，2 号 dump 在身后。3-7 号沿中线站开，彼此间隔约 5 米。"],
+      "The default offensive set. Five cutters line up in a single stack down the middle, leaving both lanes open for in-cuts and deep shots. Start every new player here.",
+    tags: ["basics", "offence"],
+    notes: [
+      "1 has the disc, 2 sets up behind as the dump. 3-7 stack down the centre line, roughly 5 m apart.",
+    ],
   },
   {
     data: horizontalStack as PlaybookData,
     category: "formation",
-    name: "横线站位 Ho Stack",
+    name: "Ho Stack",
     description:
-      "三 handler 两侧展开，四名 cutter 横向排开。进攻空间更均衡，适合对方压迫 handler 时使用。",
-    tags: ["基础", "进攻站位"],
-    notes: ["三名 handler 在下方三角，四名 cutter 横排在 15 米附近，各自负责一条纵向通道。"],
+      "Three handlers spread across the back, four cutters strung out horizontally. More balanced spacing than vert, and much better when the D is pressuring your handlers.",
+    tags: ["basics", "offence"],
+    notes: [
+      "Three handlers form the back triangle. Four cutters sit around 15 m out, each owning one vertical lane.",
+    ],
   },
   {
     data: facial as PlaybookData,
     category: "play",
     name: "Facial",
     description:
-      "起手战术。利用 cutter 的假动作制造正手侧大空档，handler 一脚长传打身后。开球后第一波进攻常用。",
-    tags: ["起手", "长传"],
+      "Pull play. A cutter sells the in-cut to open up the forehand side, then turns deep for a full-field huck. Our go-to on the first possession after the pull.",
+    tags: ["pull play", "huck"],
     notes: [],
   },
   {
@@ -47,8 +51,8 @@ const SEEDS: SeedSpec[] = [
     category: "play",
     name: "Creampie",
     description:
-      "中场推进套路。handler 之间快速倒盘拉动防守重心，边路 cutter 顺势切入拿到不设防的接盘点。",
-    tags: ["推进", "handler 配合"],
+      "Mid-field reset and go. Quick handler swing drags the defence across, then the weak-side cutter comes under into the space nobody is covering.",
+    tags: ["reset", "handler movement"],
     notes: [],
   },
 ];

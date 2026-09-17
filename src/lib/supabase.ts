@@ -52,8 +52,8 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   } catch (err) {
     throw new SupabaseError(
       err instanceof Error && err.name === "AbortError"
-        ? "连接云端超时"
-        : "无法连接云端",
+        ? "Cloud request timed out"
+        : "Can't reach the cloud",
       0
     );
   } finally {
@@ -66,7 +66,7 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
     const missingTable =
       res.status === 404 || body.includes("PGRST205") || body.includes("42P01");
     throw new SupabaseError(
-      missingTable ? "云端数据表尚未创建" : `云端错误 ${res.status}`,
+      missingTable ? "Cloud table not set up yet" : `Cloud error ${res.status}`,
       res.status,
       missingTable
     );

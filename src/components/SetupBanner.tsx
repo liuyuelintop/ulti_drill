@@ -47,12 +47,14 @@ export const SetupBanner: React.FC<SetupBannerProps> = ({ needsSetup, warning })
         <Icon name="cloudOff" size={18} className="mt-0.5 shrink-0 text-amber-300" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-amber-200">
-            {needsSetup ? "云端还没建表 —— 当前改动只存在这台设备" : "离线模式"}
+            {needsSetup
+              ? "Cloud not set up — changes stay on this device"
+              : "Offline mode"}
           </p>
           <p className="mt-1 text-[13px] leading-relaxed text-amber-100/70">
             {needsSetup
-              ? "去 Supabase 控制台 → SQL Editor，粘贴下面这段 SQL 运行一次，队友之间就能实时共享战术了。"
-              : `${warning ?? "暂时连不上云端"} —— 战术照常可看可改，联网后刷新即可同步。`}
+              ? "Open your Supabase dashboard → SQL Editor and run the snippet below once. After that the whole team shares one playbook."
+              : `${warning ?? "Can't reach the cloud right now"} — plays still work offline, refresh once you're back on signal.`}
           </p>
 
           {needsSetup && (
@@ -62,14 +64,14 @@ export const SetupBanner: React.FC<SetupBannerProps> = ({ needsSetup, warning })
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-amber-400 px-3 text-[13px] font-bold text-amber-950 active:bg-amber-300"
               >
                 <Icon name={copied ? "check" : "copy"} size={15} />
-                {copied ? "已复制" : "复制建表 SQL"}
+                {copied ? "Copied" : "Copy setup SQL"}
               </button>
               <button
                 onClick={() => setOpen((v) => !v)}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-amber-500/30 px-3 text-[13px] font-semibold text-amber-200"
               >
                 <Icon name={open ? "chevronUp" : "chevronDown"} size={15} />
-                {open ? "收起" : "查看 SQL"}
+                {open ? "Hide SQL" : "Show SQL"}
               </button>
             </div>
           )}

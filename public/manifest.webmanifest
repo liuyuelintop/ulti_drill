@@ -1,6 +1,6 @@
 {
-  "name": "战术库 · Ultimate Playbook",
-  "short_name": "战术库",
+  "name": "Ultimate Playbook",
+  "short_name": "Playbook",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",

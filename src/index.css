@@ -5,7 +5,7 @@
   :root {
     color-scheme: dark;
     --font-sans: "Outfit", ui-sans-serif, system-ui, -apple-system,
-      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      "Segoe UI", Roboto, sans-serif;
   }
 
   html {

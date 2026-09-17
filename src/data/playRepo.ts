@@ -74,14 +74,14 @@ let source: Source = isCloudConfigured ? "cloud" : "local";
 export const currentSource = () => source;
 
 const describe = (err: unknown) =>
-  err instanceof SupabaseError ? err.message : "云端不可用";
+  err instanceof SupabaseError ? err.message : "Cloud unavailable";
 
 /* ------------------------------------------------------------------- read */
 
 export async function listPlays(): Promise<RepoResult> {
   if (!isCloudConfigured) {
     source = "local";
-    return { plays: localPlays(), source: "local", warning: "未配置云端" };
+    return { plays: localPlays(), source: "local", warning: "Cloud not configured" };
   }
 
   try {
@@ -159,7 +159,7 @@ export async function savePlay(play: Play): Promise<RepoResult> {
   }
 
   upsertLocal(row);
-  return { plays: [row], source: "local", warning: "未配置云端" };
+  return { plays: [row], source: "local", warning: "Cloud not configured" };
 }
 
 export async function deletePlay(id: string): Promise<RepoResult> {

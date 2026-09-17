@@ -50,7 +50,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
     const url = window.location.href;
     try {
       if (navigator.share) {
-        await navigator.share({ title: play?.name ?? "战术", url });
+        await navigator.share({ title: play?.name ?? "Play", url });
         return;
       }
       await navigator.clipboard.writeText(url);
@@ -64,13 +64,15 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
   if (!play) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-slate-950 px-6 text-center">
-        <p className="text-slate-400">{loading ? "加载中…" : "找不到这套战术"}</p>
+        <p className="text-slate-400">
+          {loading ? "Loading…" : "That play doesn't exist"}
+        </p>
         {!loading && (
           <button
             onClick={() => navigate("#/")}
             className="rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-bold text-white"
           >
-            回战术库
+            Back to playbook
           </button>
         )}
       </div>
@@ -79,6 +81,8 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
 
   const note = play.frame_notes[index] ?? "";
   const hasNotes = Boolean(play.description) || play.frame_notes.some(Boolean);
+  // The legend only earns its space when both teams are on the field.
+  const hasDefence = renderItems.some((i) => i.type === "defense");
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-slate-950">
@@ -87,7 +91,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
         <button
           onClick={() => navigate("#/")}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
-          aria-label="返回"
+          aria-label="Back"
         >
           <Icon name="back" />
         </button>
@@ -97,7 +101,8 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
             {play.name}
           </h1>
           <p className="truncate text-[11px] text-slate-500">
-            {CATEGORY_LABELS[play.category]} · {frames.length} 帧
+            {CATEGORY_LABELS[play.category]} · {frames.length}{" "}
+            {frames.length === 1 ? "frame" : "frames"}
             {play.author ? ` · ${play.author}` : ""}
           </p>
         </div>
@@ -105,7 +110,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
         <button
           onClick={share}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 active:bg-slate-800"
-          aria-label="分享"
+          aria-label="Share link"
         >
           <Icon name={copied ? "check" : "share"} size={18} />
         </button>
@@ -116,17 +121,17 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl active:bg-slate-800 ${
             auto ? "text-slate-300" : "text-sky-400"
           }`}
-          aria-label="旋转球场"
+          aria-label="Rotate field"
         >
           <Icon name="rotate" size={18} />
         </button>
         <button
           onClick={() => navigate(`#/p/${play.id}/edit`)}
-          aria-label="编辑"
+          aria-label="Edit"
           className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-slate-800 px-3 text-[13px] font-bold text-slate-100 active:bg-slate-700"
         >
           <Icon name="edit" size={16} />
-          <span className="hidden sm:inline">编辑</span>
+          <span className="hidden sm:inline">Edit</span>
         </button>
       </header>
 
@@ -141,17 +146,19 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
             region={region}
             className="absolute inset-0"
           />
-          <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-lg bg-black/45 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-red-500" />
-            进攻
-            <span className="ml-1 h-2 w-2 rounded-full bg-blue-500" />
-            防守
-          </div>
+          {hasDefence && (
+            <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 rounded-lg bg-black/45 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              Offence
+              <span className="ml-1.5 h-2 w-2 rounded-full bg-blue-500" />
+              Defence
+            </div>
+          )}
           <button
             onClick={() => setZoomed((v) => !v)}
             className="absolute bottom-3 right-3 rounded-lg bg-black/55 px-2.5 py-1.5 text-[11px] font-bold text-white backdrop-blur active:bg-black/70"
           >
-            {zoomed ? "看全场" : "聚焦战术"}
+            {zoomed ? "Full field" : "Fit to play"}
           </button>
         </div>
 
@@ -161,7 +168,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
             {play.description && (
               <>
                 <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                  战术说明
+                  About this play
                 </h2>
                 <p className="mb-6 whitespace-pre-wrap text-sm leading-relaxed text-slate-300">
                   {play.description}
@@ -169,7 +176,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
               </>
             )}
             <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-              分帧要点
+              Frame notes
             </h2>
             <ol className="space-y-2">
               {frames.map((_, i) => (
@@ -191,7 +198,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
                     </span>
                     <span className="text-[13px] leading-snug text-slate-300">
                       {play.frame_notes[i] || (
-                        <span className="text-slate-600">（无要点）</span>
+                        <span className="text-slate-600">No note yet</span>
                       )}
                     </span>
                   </button>
@@ -215,7 +222,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
                 notesOpen ? "" : "line-clamp-2"
               }`}
             >
-              {note || play.description || "（这一帧没有写要点）"}
+              {note || play.description || "No note on this frame yet"}
             </span>
             <Icon
               name={notesOpen ? "chevronDown" : "chevronUp"}
@@ -227,7 +234,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
           {notesOpen && play.description && (
             <div className="max-h-[30dvh] overflow-y-auto border-t border-slate-800 px-4 py-3">
               <h2 className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                战术说明
+                About this play
               </h2>
               <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-slate-400">
                 {play.description}
@@ -244,7 +251,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
             onClick={toggle}
             disabled={frames.length < 2}
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg shadow-sky-500/25 transition-transform active:scale-95 disabled:opacity-30"
-            aria-label={playing ? "暂停" : "播放"}
+            aria-label={playing ? "Pause" : "Play"}
           >
             <Icon name={playing ? "pause" : "play"} size={22} />
           </button>

@@ -53,12 +53,12 @@ export const getStandardFormation = (
     const offensePlayer = items.find((item) => item.id === offenseId);
 
     if (offensePlayer) {
-      // Mark the corresponding offense player (slightly downfield and right)
+      // Mark the corresponding offense player, offset enough to stay legible.
       addPlayer(
         `defense-${i}`,
         "defense",
-        offensePlayer.x + 2,
-        offensePlayer.y + 2,
+        offensePlayer.x + 2.8,
+        offensePlayer.y - 2.8,
         i.toString()
       );
     } else {

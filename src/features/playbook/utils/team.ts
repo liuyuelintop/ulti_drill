@@ -1,6 +1,9 @@
 import type { DraggableItem } from "../types";
 import { getStandardFormation } from "./formation";
 
+/** How far a new defender is placed from the player they mark, in metres. */
+const MARK_OFFSET = 2.8;
+
 /**
  * Resize the roster across *every* frame, so player ids stay consistent and
  * playback can still interpolate between frames.
@@ -33,14 +36,15 @@ export const applyTeamSize = (
         next.push({ ...existing, label: String(i) });
         continue;
       }
-      // New defender: shadow the matching offensive player.
+      // New defender: shadow the matching offensive player, far enough away
+      // that both tokens stay readable on a phone.
       const partner = next.find((p) => p.id === `offense-${i}`);
       if (partner) {
         next.push({
           id,
           type: "defense",
-          x: partner.x + 1.8,
-          y: partner.y + 1.8,
+          x: partner.x + MARK_OFFSET,
+          y: partner.y - MARK_OFFSET,
           label: String(i),
         });
       } else {
