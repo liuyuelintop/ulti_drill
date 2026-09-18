@@ -19,6 +19,13 @@ import {
   type Source,
 } from "./playRepo";
 
+export interface SaveOutcome {
+  play: Play;
+  source: Source;
+  /** Set when the play only made it to local storage. */
+  warning?: string;
+}
+
 interface PlaybookValue {
   plays: Play[];
   loading: boolean;
@@ -28,7 +35,7 @@ interface PlaybookValue {
   author: string;
   setAuthor: (name: string) => void;
   refresh: () => Promise<void>;
-  save: (play: Play) => Promise<Play>;
+  save: (play: Play) => Promise<SaveOutcome>;
   remove: (id: string) => Promise<void>;
   seed: () => Promise<void>;
 }
@@ -81,7 +88,7 @@ export const PlaybookProvider: React.FC<{ children: React.ReactNode }> = ({
     setAuthorState(name);
   }, []);
 
-  const save = useCallback(async (play: Play) => {
+  const save = useCallback(async (play: Play): Promise<SaveOutcome> => {
     const res = await repoSave(play);
     const saved = res.plays[0];
     setSource(res.source);
@@ -91,7 +98,7 @@ export const PlaybookProvider: React.FC<{ children: React.ReactNode }> = ({
       const next = prev.filter((p) => p.id !== saved.id);
       return [saved, ...next];
     });
-    return saved;
+    return { play: saved, source: res.source, warning: res.warning };
   }, []);
 
   const remove = useCallback(async (id: string) => {

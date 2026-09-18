@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePlaybook } from "../data/playbookStore";
 import {
   CATEGORY_LABELS,
@@ -40,6 +40,8 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
   const [dirty, setDirty] = useState(id === null);
   const [saving, setSaving] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [nameError, setNameError] = useState(false);
+  const nameRef = useRef<HTMLInputElement>(null);
   const { orientation, setOrientation } = useAutoOrientation();
 
   // The play may still be loading when this screen mounts; adopt it as the
@@ -134,14 +136,27 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
     if (!draft) return;
     const name = draft.name.trim();
     if (!name) {
-      setSettingsOpen(true);
+      // The name lives in the top bar, so send the user there rather than
+      // opening the settings sheet, which has no name field at all.
+      setNameError(true);
+      nameRef.current?.focus();
       return;
     }
     setSaving(true);
-    const saved = await save({ ...draft, name, author: draft.author || author });
+    const outcome = await save({
+      ...draft,
+      name,
+      author: draft.author || author,
+    });
     setSaving(false);
     setDirty(false);
-    navigate(`#/p/${saved.id}`);
+    if (outcome.source === "local") {
+      // Never let a failed cloud write look like a successful one.
+      window.alert(
+        `Saved on this device only — ${outcome.warning ?? "can't reach the cloud"}.\n\nYour teammates won't see "${name}" until you reopen the app on a working connection.`
+      );
+    }
+    navigate(`#/p/${outcome.play.id}`);
   };
 
   const handleBack = () => {
@@ -191,11 +206,20 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
         </button>
 
         <input
+          ref={nameRef}
           value={draft.name}
-          onChange={(e) => patch({ name: e.target.value })}
+          onChange={(e) => {
+            patch({ name: e.target.value });
+            if (nameError) setNameError(false);
+          }}
           placeholder="Name this play"
           maxLength={40}
-          className="h-10 min-w-0 flex-1 rounded-xl border border-transparent bg-slate-900 px-3 text-[15px] font-bold text-white placeholder:font-normal placeholder:text-slate-600 focus:border-sky-500 focus:outline-none"
+          aria-invalid={nameError}
+          className={`h-10 min-w-0 flex-1 rounded-xl border bg-slate-900 px-3 text-[15px] font-bold text-white placeholder:font-normal focus:outline-none ${
+            nameError
+              ? "border-red-500 placeholder:text-red-300/60"
+              : "border-transparent placeholder:text-slate-600 focus:border-sky-500"
+          }`}
         />
 
         <button
@@ -225,6 +249,15 @@ export const EditorScreen: React.FC<{ id: string | null }> = ({ id }) => {
           <span className="hidden sm:inline">{saving ? "Saving…" : "Save"}</span>
         </Button>
       </header>
+
+      {nameError && (
+        <p
+          role="alert"
+          className="shrink-0 border-b border-red-500/30 bg-red-500/10 px-4 py-2 text-[13px] font-semibold text-red-200"
+        >
+          Give this play a name before saving it.
+        </p>
+      )}
 
       {/* Field */}
       <div className="relative min-h-0 flex-1 bg-slate-900">
