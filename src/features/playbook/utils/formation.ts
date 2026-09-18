@@ -1,80 +1,57 @@
 import type { DraggableItem, ItemType } from "../types";
 import { DEFAULT_STANDARD } from "../constants/standards";
 
+const { width, endzoneLength, brickMark } = DEFAULT_STANDARD.dimensions;
+
+/** How far a defender sets up from the player they mark, in metres. */
+export const MARK_OFFSET = 2.8;
+
+/** Depth of the first stack cutter past the disc, in metres. */
+const STACK_DEPTH = 18;
+/** Gap between stack cutters, in metres. */
+const STACK_SPACING = 6;
+
+/**
+ * A vertical-stack starting set: thrower on the brick, dump behind, the rest
+ * stacked down the centre line. Defenders shadow their matching cutter.
+ *
+ * All coordinates are in metres on the WFDF field, origin at the outer corner
+ * of the left end zone.
+ */
 export const getStandardFormation = (
-  offenseCount: number = 7,
-  defenseCount: number = 0
-) => {
+  offenseCount = 7,
+  defenseCount = 0
+): DraggableItem[] => {
   const items: DraggableItem[] = [];
-  
-  // Use logical dimensions from the standard
-  const { width, endzoneLength, brickMark } = DEFAULT_STANDARD.dimensions;
-  
   const centerY = width / 2;
   const discX = endzoneLength + brickMark;
 
-  const addPlayer = (
-    id: string,
-    type: ItemType,
-    x: number,
-    y: number,
-    label: string
-  ) => {
+  const add = (id: string, type: ItemType, x: number, y: number, label: string) =>
     items.push({ id, type, x, y, label });
-  };
 
-  // Always add disc
-  addPlayer("disc", "disc", discX + 2, centerY + 0.5, "");
+  add("disc", "disc", discX + 2, centerY + 0.5, "");
 
-  // --- Offense Setup (Vertical Stack Base) ---
-  // Handler 1 (thrower)
-  if (offenseCount >= 1) {
-    addPlayer("offense-1", "offense", discX, centerY, "1");
-  }
-  // Handler 2 (dump)
-  if (offenseCount >= 2) {
-    addPlayer("offense-2", "offense", discX - 8, centerY + 10, "2");
-  }
-  // Stack players
+  // Thrower on the brick mark, dump set up behind and to the open side.
+  if (offenseCount >= 1) add("offense-1", "offense", discX, centerY, "1");
+  if (offenseCount >= 2) add("offense-2", "offense", discX - 8, centerY + 10, "2");
+
   for (let i = 0; i < offenseCount - 2; i++) {
-    addPlayer(
+    add(
       `offense-${i + 3}`,
       "offense",
-      discX + 18 + i * 6, // ~18 yards deep, 6 yard spacing
+      discX + STACK_DEPTH + i * STACK_SPACING,
       centerY,
-      (i + 3).toString()
+      String(i + 3)
     );
   }
 
-  // --- Defense Setup (Person Marking Base) ---
-  // Defense marks offense players 1-to-1 by default, offset slightly
   for (let i = 1; i <= defenseCount; i++) {
-    const offenseId = `offense-${i}`;
-    const offensePlayer = items.find((item) => item.id === offenseId);
-
-    if (offensePlayer) {
-      // Mark the corresponding offense player, offset enough to stay legible.
-      addPlayer(
-        `defense-${i}`,
-        "defense",
-        offensePlayer.x + 2.8,
-        offensePlayer.y - 2.8,
-        i.toString()
-      );
-    } else {
-      // Fallback if no matching offense player (extra defenders): zone positions?
-      // Just place them in a line
-      addPlayer(
-        `defense-${i}`,
-        "defense",
-        discX + 12 + (i - 1) * 5,
-        centerY + 12,
-        i.toString()
-      );
-    }
+    const partner = items.find((item) => item.id === `offense-${i}`);
+    // Extra defenders with nobody to mark fan out in front of the stack.
+    const x = partner ? partner.x + MARK_OFFSET : discX + 12 + (i - 1) * 5;
+    const y = partner ? partner.y - MARK_OFFSET : centerY + 12;
+    add(`defense-${i}`, "defense", x, y, String(i));
   }
 
   return items;
 };
-
-export const getInitialFormation = () => getStandardFormation(7, 0);

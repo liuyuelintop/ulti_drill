@@ -1,11 +1,12 @@
 import React from "react";
 import { Rect, Line, Text, Group } from "react-konva";
 import type { FieldStandard } from "../playbook/constants/standards";
-import { FIELD_THEME as T } from "./theme";
+import type { FieldTheme } from "./theme";
 
 interface FieldLayerProps {
   scale: number;
   standard: FieldStandard;
+  theme: FieldTheme;
   /** Degrees the parent group is rotated by; text is counter-rotated to stay upright. */
   textRotation?: number;
 }
@@ -15,6 +16,7 @@ const STRIPES = 12;
 export const FieldLayer: React.FC<FieldLayerProps> = ({
   scale,
   standard,
+  theme: T,
   textRotation = 0,
 }) => {
   const { length, width, endzoneLength, brickMark } = standard.dimensions;
@@ -32,21 +34,31 @@ export const FieldLayer: React.FC<FieldLayerProps> = ({
 
   return (
     <>
-      {/* Mown stripes */}
-      {Array.from({ length: STRIPES }).map((_, i) => (
-        <Rect
-          key={`stripe-${i}`}
-          x={(L / STRIPES) * i}
-          y={0}
-          width={L / STRIPES + 1}
-          height={W}
-          fill={i % 2 === 0 ? T.grass : T.grassAlt}
-        />
-      ))}
+      {T.stripes ? (
+        Array.from({ length: STRIPES }).map((_, i) => (
+          <Rect
+            key={`stripe-${i}`}
+            x={(L / STRIPES) * i}
+            y={0}
+            width={L / STRIPES + 1}
+            height={W}
+            fill={i % 2 === 0 ? T.grass : T.grassAlt}
+          />
+        ))
+      ) : (
+        <Rect x={0} y={0} width={L} height={W} fill={T.grass} />
+      )}
 
       {/* End zones */}
-      <Rect x={0} y={0} width={EZ} height={W} fill={T.endzone} opacity={0.55} />
-      <Rect x={L - EZ} y={0} width={EZ} height={W} fill={T.endzone} opacity={0.55} />
+      <Rect x={0} y={0} width={EZ} height={W} fill={T.endzone} opacity={T.endzoneOpacity} />
+      <Rect
+        x={L - EZ}
+        y={0}
+        width={EZ}
+        height={W}
+        fill={T.endzone}
+        opacity={T.endzoneOpacity}
+      />
 
       {/* Every-10-unit reference lines inside the playing field */}
       {Array.from({ length: Math.floor((length - 2 * endzoneLength) / 10) }).map(

@@ -20,7 +20,12 @@ type IconName =
   | "share"
   | "refresh"
   | "user"
-  | "sliders";
+  | "sliders"
+  | "undo"
+  | "redo"
+  | "cone"
+  | "text"
+  | "contrast";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   back: <path d="M15 18l-6-6 6-6" />,
@@ -124,6 +129,37 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <line x1="1" y1="14" x2="7" y2="14" />
       <line x1="9" y1="8" x2="15" y2="8" />
       <line x1="17" y1="16" x2="23" y2="16" />
+    </>
+  ),
+  undo: (
+    <>
+      <polyline points="9 14 4 9 9 4" />
+      <path d="M4 9h11a5 5 0 015 5v1a5 5 0 01-5 5H7" />
+    </>
+  ),
+  redo: (
+    <>
+      <polyline points="15 14 20 9 15 4" />
+      <path d="M20 9H9a5 5 0 00-5 5v1a5 5 0 005 5h8" />
+    </>
+  ),
+  cone: (
+    <>
+      <path d="M12 3l7 15H5z" />
+      <line x1="3" y1="21" x2="21" y2="21" />
+    </>
+  ),
+  text: (
+    <>
+      <polyline points="5 7 5 4 19 4 19 7" />
+      <line x1="12" y1="4" x2="12" y2="20" />
+      <line x1="8" y1="20" x2="16" y2="20" />
+    </>
+  ),
+  contrast: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3a9 9 0 010 18z" fill="currentColor" stroke="none" />
     </>
   ),
 };

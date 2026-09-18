@@ -1,12 +1,15 @@
 import type { DraggableItem } from "../types";
-import { getStandardFormation } from "./formation";
+import { getStandardFormation, MARK_OFFSET } from "./formation";
 
-/** How far a new defender is placed from the player they mark, in metres. */
-const MARK_OFFSET = 2.8;
+const isRoster = (item: DraggableItem) =>
+  item.type === "offense" || item.type === "defense" || item.type === "disc";
 
 /**
  * Resize the roster across *every* frame, so player ids stay consistent and
  * playback can still interpolate between frames.
+ *
+ * Cones and annotations are not part of the roster and are carried through
+ * untouched — changing the number of cutters must never wipe a drill's cones.
  */
 export const applyTeamSize = (
   frames: DraggableItem[][],
@@ -53,6 +56,8 @@ export const applyTeamSize = (
       }
     }
 
+    for (const item of frame) if (!isRoster(item)) next.push(item);
+
     return next;
   });
 };
@@ -65,3 +70,46 @@ export const countByType = (frame: DraggableItem[] = []) => ({
 export const createInitialFrames = (): DraggableItem[][] => [
   getStandardFormation(7, 0),
 ];
+
+/** Next free `<prefix>-<n>` id across the whole play. */
+const nextId = (frames: DraggableItem[][], prefix: string): string => {
+  let max = 0;
+  for (const frame of frames) {
+    for (const item of frame) {
+      const match = item.id.match(new RegExp(`^${prefix}-(\\d+)$`));
+      if (match) max = Math.max(max, Number(match[1]));
+    }
+  }
+  return `${prefix}-${max + 1}`;
+};
+
+/**
+ * Add a cone or annotation to every frame at the same spot. Present in all
+ * frames means it never pops in and out, and playback can move it if it should.
+ */
+export const addItem = (
+  frames: DraggableItem[][],
+  type: "cone" | "text",
+  position: { x: number; y: number },
+  label = ""
+): { frames: DraggableItem[][]; id: string } => {
+  const id = nextId(frames, type);
+  const item: DraggableItem = { id, type, x: position.x, y: position.y, label };
+  return { frames: frames.map((frame) => [...frame, { ...item }]), id };
+};
+
+/** Remove an item from every frame. */
+export const removeItem = (
+  frames: DraggableItem[][],
+  id: string
+): DraggableItem[][] => frames.map((frame) => frame.filter((i) => i.id !== id));
+
+/** Relabel an item across every frame, so a note reads the same throughout. */
+export const relabelItem = (
+  frames: DraggableItem[][],
+  id: string,
+  label: string
+): DraggableItem[][] =>
+  frames.map((frame) =>
+    frame.map((item) => (item.id === id ? { ...item, label } : item))
+  );

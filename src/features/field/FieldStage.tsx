@@ -11,6 +11,11 @@ import { Stage, Layer, Group } from "react-konva";
 import type { DraggableItem } from "../playbook/types";
 import { DEFAULT_STANDARD } from "../playbook/constants/standards";
 import { FULL_FIELD, expandToFill, type Region } from "./bounds";
+import {
+  DEFAULT_THEME,
+  FIELD_THEMES,
+  type FieldThemeName,
+} from "./theme";
 import FieldLayer from "./FieldLayer";
 import ItemsLayer from "./ItemsLayer";
 import TrailsLayer from "./TrailsLayer";
@@ -28,8 +33,12 @@ interface FieldStageProps {
   selectedId?: string | null;
   onMove?: (id: string, x: number, y: number) => void;
   onSelect?: (id: string | null) => void;
+  onCurve?: (id: string, cx: number, cy: number, done: boolean) => void;
   /** Slice of field to fill the viewport with. Defaults to the whole field. */
   region?: Region;
+  themeName?: FieldThemeName;
+  /** Sentence describing what is on the field, for screen readers. */
+  ariaLabel?: string;
   className?: string;
 }
 
@@ -48,13 +57,17 @@ export const FieldStage = forwardRef<Konva.Stage, FieldStageProps>(
       selectedId,
       onMove,
       onSelect,
+      onCurve,
       region = FULL_FIELD,
+      themeName = DEFAULT_THEME,
+      ariaLabel,
       className = "",
     },
     ref
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [box, setBox] = useState({ w: 0, h: 0 });
+    const theme = FIELD_THEMES[themeName] ?? FIELD_THEMES[DEFAULT_THEME];
 
     // Track the container so the field always fills whatever space it is given.
     useLayoutEffect(() => {
@@ -139,7 +152,12 @@ export const FieldStage = forwardRef<Konva.Stage, FieldStageProps>(
     const ready = box.w > 0 && box.h > 0 && scale > 0;
 
     return (
-      <div ref={containerRef} className={`h-full w-full ${className}`}>
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label={ariaLabel}
+        className={`h-full w-full ${className}`}
+      >
         {ready && (
           <Stage
             ref={ref}
@@ -153,6 +171,7 @@ export const FieldStage = forwardRef<Konva.Stage, FieldStageProps>(
                 <FieldLayer
                   scale={scale}
                   standard={DEFAULT_STANDARD}
+                  theme={theme}
                   textRotation={textRotation}
                 />
               </Group>
@@ -163,6 +182,7 @@ export const FieldStage = forwardRef<Konva.Stage, FieldStageProps>(
                   <ItemsLayer
                     items={ghostItems}
                     scale={scale}
+                    theme={theme}
                     draggable={false}
                     ghost
                   />
@@ -171,11 +191,15 @@ export const FieldStage = forwardRef<Konva.Stage, FieldStageProps>(
                   from={trailFrom}
                   to={items}
                   scale={scale}
+                  theme={theme}
                   visible={showTrails}
+                  editable={editable}
+                  onCurve={onCurve}
                 />
                 <ItemsLayer
                   items={items}
                   scale={scale}
+                  theme={theme}
                   selectedId={selectedId}
                   draggable={editable}
                   textRotation={textRotation}

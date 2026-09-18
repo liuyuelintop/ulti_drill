@@ -12,11 +12,17 @@ Live: https://ulti-drill.vercel.app/
 - **Watch a play** (phone-first) — in portrait the field rotates so the attack runs
   up the screen and fills it, then zooms to the slice of field the play actually uses.
   Step through frames or hit play; dashed arrows show who moved where.
-- **Edit a play** — drag players on phone or laptop. Add and delete frames, change how
-  many players are on the field (applies across every frame), write a description and tags.
+- **Edit a play** — drag players on phone or laptop. Bend a run into a curve by
+  dragging the dot on its arrow, so a fake-in-go-deep cut is one frame rather than
+  four. Drop cones and on-field notes. Add and delete frames, change how many
+  players are on the field (applies across every frame), write a description and
+  tags. Undo and redo with Ctrl/Cmd-Z.
 - **Cloud sync** — everyone opening the same URL sees the same playbook. If the cloud is
   unreachable it falls back to local storage, so the sideline still works without signal,
   and syncs again on refresh.
+- **Reads in the sun** — a flat, high-contrast diagram theme alongside the grass one,
+  and attackers, defenders and cones are told apart by shape as well as colour, so
+  the diagram still works in greyscale and for red–green colour blindness.
 
 ## First-time setup: create the table
 
@@ -36,6 +42,7 @@ pnpm install
 pnpm dev        # http://localhost:5173
 pnpm build      # typecheck + bundle
 pnpm lint
+pnpm test       # vitest — model, geometry and framing maths
 ```
 
 The Supabase URL and anon key are baked into `src/lib/supabase.ts` as defaults (the anon
@@ -82,5 +89,9 @@ A play looks like this:
 }
 ```
 
-Item `type` is `offense`, `defense` or `disc` — those are the stored data values and stay
-as-is; the UI labels them Offence and Defence.
+Item `type` is `offense`, `defense`, `disc`, `cone` or `text` — those are the stored
+data values and stay as-is; the UI labels the first two Offence and Defence. An item
+may also carry `cx` / `cy`, the control point of the curve it follows into that frame.
+
+See [`GEMINI.md`](./GEMINI.md) for the architecture, the notation and the invariants
+worth knowing before changing the field code.

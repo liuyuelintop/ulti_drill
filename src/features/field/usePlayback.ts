@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { DraggableItem } from "../playbook/types";
+import { pointOnPath, type DraggableItem } from "../playbook/types";
 
 const MS_PER_FRAME = 1300;
 
+/**
+ * Walk each item along its path into the next frame. Items carrying a control
+ * point follow the curve, so a fake-in-go-deep cut animates as one bend rather
+ * than a straight line through the defender.
+ */
 const lerpFrames = (
   a: DraggableItem[],
   b: DraggableItem[],
@@ -11,11 +16,8 @@ const lerpFrames = (
   a.map((item) => {
     const target = b.find((i) => i.id === item.id);
     if (!target) return item;
-    return {
-      ...item,
-      x: item.x + (target.x - item.x) * t,
-      y: item.y + (target.y - item.y) * t,
-    };
+    const { x, y } = pointOnPath(item, target, t);
+    return { ...item, x, y };
   });
 
 /**

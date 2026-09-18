@@ -7,6 +7,8 @@ import { Button } from "../components/Button";
 import { PlayThumb } from "../components/PlayThumb";
 import { AuthorPrompt } from "../components/AuthorPrompt";
 import { SetupBanner } from "../components/SetupBanner";
+import { useFieldTheme } from "../lib/useFieldTheme";
+import type { FieldThemeName } from "../features/field/theme";
 
 type Filter = "all" | PlayCategory;
 
@@ -39,13 +41,20 @@ const timeAgo = (iso: string) => {
   });
 };
 
-const PlayCard: React.FC<{ play: Play }> = ({ play }) => (
+const PlayCard: React.FC<{ play: Play; themeName: FieldThemeName }> = ({
+  play,
+  themeName,
+}) => (
   <button
     onClick={() => navigate(`#/p/${play.id}`)}
     className="group flex w-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 text-left transition-colors hover:border-slate-600 active:border-sky-500"
   >
     <div className="relative h-28 w-full sm:h-32">
-      <PlayThumb frames={play.frames} className="h-full w-full" />
+      <PlayThumb
+        frames={play.frames}
+        themeName={themeName}
+        className="h-full w-full"
+      />
       <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-900 to-transparent" />
       <span className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
         {play.frames.length} {play.frames.length === 1 ? "frame" : "frames"}
@@ -88,6 +97,7 @@ const PlayCard: React.FC<{ play: Play }> = ({ play }) => (
 export const LibraryScreen: React.FC = () => {
   const { plays, loading, source, warning, needsSetup, author, refresh, seed } =
     usePlaybook();
+  const { themeName } = useFieldTheme();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
 
@@ -231,7 +241,7 @@ export const LibraryScreen: React.FC = () => {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((play) => (
-              <PlayCard key={play.id} play={play} />
+              <PlayCard key={play.id} play={play} themeName={themeName} />
             ))}
           </div>
         )}

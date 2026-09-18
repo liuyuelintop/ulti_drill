@@ -7,6 +7,9 @@ import { FieldStage, type FieldOrientation } from "../features/field/FieldStage"
 import { usePlayback } from "../features/field/usePlayback";
 import { playRegion, FULL_FIELD } from "../features/field/bounds";
 import { useAutoOrientation } from "../lib/useAutoOrientation";
+import type { DraggableItem } from "../features/playbook/types";
+import { useFieldTheme } from "../lib/useFieldTheme";
+import { describeFrame } from "../features/field/describe";
 
 const SPEEDS = [0.5, 1, 1.5] as const;
 
@@ -16,6 +19,7 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
   const frames = useMemo(() => play?.frames ?? [], [play]);
 
   const { orientation, setOrientation, auto } = useAutoOrientation();
+  const { themeName, toggleTheme } = useFieldTheme();
   const [notesOpen, setNotesOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   // Zoom into the slice of field the play uses — the default, since reading the
@@ -81,8 +85,6 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
 
   const note = play.frame_notes[index] ?? "";
   const hasNotes = Boolean(play.description) || play.frame_notes.some(Boolean);
-  // The legend only earns its space when both teams are on the field.
-  const hasDefence = renderItems.some((i) => i.type === "defense");
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-slate-950">
@@ -144,22 +146,30 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
             showTrails={!playing}
             orientation={orientation as FieldOrientation}
             region={region}
+            themeName={themeName}
+            ariaLabel={describeFrame(renderItems, index, frames.length, note)}
             className="absolute inset-0"
           />
-          {hasDefence && (
-            <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 rounded-lg bg-black/45 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-red-500" />
-              Offence
-              <span className="ml-1.5 h-2 w-2 rounded-full bg-blue-500" />
-              Defence
-            </div>
-          )}
-          <button
-            onClick={() => setZoomed((v) => !v)}
-            className="absolute bottom-3 right-3 rounded-lg bg-black/55 px-2.5 py-1.5 text-[11px] font-bold text-white backdrop-blur active:bg-black/70"
-          >
-            {zoomed ? "Full field" : "Fit to play"}
-          </button>
+          <Legend items={renderItems} hasTrails={index > 0} />
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
+            <button
+              onClick={toggleTheme}
+              aria-label={
+                themeName === "grass"
+                  ? "Switch to the high-contrast diagram field"
+                  : "Switch to the grass field"
+              }
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur active:bg-black/70"
+            >
+              <Icon name="contrast" size={16} />
+            </button>
+            <button
+              onClick={() => setZoomed((v) => !v)}
+              className="h-8 rounded-lg bg-black/55 px-2.5 text-[11px] font-bold text-white backdrop-blur active:bg-black/70"
+            >
+              {zoomed ? "Full field" : "Fit to play"}
+            </button>
+          </div>
         </div>
 
         {/* Notes: sidebar on wide screens, sheet on phones */}
@@ -244,6 +254,10 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
         </div>
       )}
 
+      <p aria-live="polite" className="sr-only">
+        {describeFrame(frames[index] ?? [], index, frames.length, note)}
+      </p>
+
       {/* Playback controls */}
       <footer className="shrink-0 border-t border-slate-800 bg-slate-950 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2.5">
         <div className="mx-auto flex max-w-3xl items-center gap-3">
@@ -281,6 +295,69 @@ export const ViewerScreen: React.FC<{ id: string }> = ({ id }) => {
         </div>
       </footer>
     </div>
+  );
+};
+
+/* ------------------------------------------------------------------ legend */
+
+/**
+ * The notation is only obvious if you already know it. Shows just the marks the
+ * current frame actually uses, so it stays out of the way on a phone.
+ */
+const Legend: React.FC<{ items: DraggableItem[]; hasTrails: boolean }> = ({
+  items,
+  hasTrails,
+}) => {
+  const has = (type: string) => items.some((i) => i.type === type);
+  const entries: { key: string; mark: React.ReactNode; label: string }[] = [];
+
+  if (has("offense"))
+    entries.push({
+      key: "o",
+      mark: <span className="h-2.5 w-2.5 rounded-full bg-red-500" />,
+      label: "Offence",
+    });
+  if (has("defense"))
+    entries.push({
+      key: "d",
+      mark: <span className="h-2.5 w-2.5 rounded-[2px] bg-blue-600" />,
+      label: "Defence",
+    });
+  if (has("cone"))
+    entries.push({
+      key: "c",
+      mark: (
+        <span className="h-0 w-0 border-x-[5px] border-b-[9px] border-x-transparent border-b-amber-500" />
+      ),
+      label: "Cone",
+    });
+  if (hasTrails) {
+    entries.push({
+      key: "throw",
+      mark: <span className="h-0.5 w-4 rounded bg-white" />,
+      label: "Throw",
+    });
+    entries.push({
+      key: "run",
+      mark: (
+        <span className="h-0.5 w-4 rounded bg-[repeating-linear-gradient(90deg,white_0_4px,transparent_4px_7px)]" />
+      ),
+      label: "Run",
+    });
+  }
+
+  // One row is not a key, it is clutter.
+  if (entries.length < 2) return null;
+
+  return (
+    <ul className="pointer-events-none absolute bottom-3 left-3 flex max-w-[60%] flex-wrap items-center gap-x-2.5 gap-y-1 rounded-lg bg-black/45 px-2 py-1.5 text-[11px] font-semibold text-white backdrop-blur">
+      {entries.map((entry) => (
+        <li key={entry.key} className="flex items-center gap-1.5">
+          {entry.mark}
+          {entry.label}
+        </li>
+      ))}
+    </ul>
   );
 };
 
