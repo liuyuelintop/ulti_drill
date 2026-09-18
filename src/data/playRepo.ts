@@ -71,7 +71,6 @@ const writeLocal = (plays: Play[]) => writeJson(LOCAL_KEY, plays);
 /* ------------------------------------------------------------------ state */
 
 let source: Source = isCloudConfigured ? "cloud" : "local";
-export const currentSource = () => source;
 
 const describe = (err: unknown) =>
   err instanceof SupabaseError ? err.message : "Cloud unavailable";
@@ -103,23 +102,6 @@ export async function listPlays(): Promise<RepoResult> {
       needsSetup,
     };
   }
-}
-
-export async function getPlay(id: string): Promise<Play | null> {
-  if (source === "cloud") {
-    try {
-      const rows = await sb.select<Play[]>(
-        TABLE,
-        `select=${SELECT_COLS}&id=eq.${encodeURIComponent(id)}&limit=1`
-      );
-      if (rows?.length) return normalizePlay(rows[0]);
-    } catch {
-      source = "local";
-    }
-  }
-  const all = [...localPlays(), ...readJson<Play[]>(CACHE_KEY, [])];
-  const hit = all.find((p) => p.id === id);
-  return hit ? normalizePlay(hit) : null;
 }
 
 /* ------------------------------------------------------------------ write */
